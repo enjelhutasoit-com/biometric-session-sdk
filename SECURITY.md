@@ -9,7 +9,8 @@ Server-side authorization is required for anything sensitive.
 
 ## Supported versions
 
-No release yet. This section is updated at `v0.1.0`.
+Only the latest release receives fixes.
+Current: `0.1.x`.
 
 ## Reporting a vulnerability
 
