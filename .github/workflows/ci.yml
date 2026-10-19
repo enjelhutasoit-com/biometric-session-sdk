@@ -70,10 +70,14 @@ jobs:
           xcodebuild -version
           swift --version
           uname -m
+      - name: List schemes and SDKs
+        run: |
+          xcodebuild -list
+          xcodebuild -showsdks
       - name: Build for iOS Simulator (deployment target from Package.swift)
         run: |
           xcodebuild build \
-            -scheme BiometricSession \
+            -scheme BiometricSessionCore \
             -destination 'generic/platform=iOS Simulator'
       - name: Build TestSupport for iOS Simulator
         run: |
