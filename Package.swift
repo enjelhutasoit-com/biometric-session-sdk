@@ -12,14 +12,26 @@ let package = Package(
     products: [
         .library(
             name: "BiometricSessionCore",
-            targets: ["BiometricSessionCore"])
+            targets: ["BiometricSessionCore"]),
+        .library(
+            name: "BiometricSessionTestSupport",
+            targets: ["BiometricSessionTestSupport"]
+        ),
     ],
     targets: [
         .target(
             name: "BiometricSessionCore"),
+        .target(
+            name: "BiometricSessionTestSupport",
+            dependencies: ["BiometricSessionCore"]
+        ),
         .testTarget(
             name: "BiometricSessionCoreTests",
             dependencies: ["BiometricSessionCore"]
+        ),
+        .testTarget(
+            name: "BiometricSessionTestSupportTests",
+            dependencies: ["BiometricSessionCore", "BiometricSessionTestSupport"]
         ),
     ],
     swiftLanguageModes: [.v6]
