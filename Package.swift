@@ -7,12 +7,12 @@ let package = Package(
     name: "BiometricSession",
     platforms: [
         .iOS(.v14),
-        .macOS(.v11)
+        .macOS(.v11),
     ],
     products: [
         .library(
             name: "BiometricSessionCore",
-            targets: ["BiometricSessionCore"]),
+            targets: ["BiometricSessionCore"])
     ],
     targets: [
         .target(
