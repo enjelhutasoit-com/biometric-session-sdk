@@ -84,3 +84,8 @@ jobs:
           xcodebuild build \
             -scheme BiometricSessionTestSupport \
             -destination 'generic/platform=iOS Simulator'
+      - name: Build LocalAuth for iOS Simulator
+        run: |
+          xcodebuild build \
+            -scheme BiometricSessionLocalAuth \
+            -destination 'generic/platform=iOS Simulator'
