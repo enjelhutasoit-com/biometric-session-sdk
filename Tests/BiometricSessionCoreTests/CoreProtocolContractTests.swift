@@ -9,7 +9,7 @@ import Testing
 // Contract tests. They pin the SHAPE of the two protocols
 // (signature, Sendable, usable as an existential).
 // They do not prove real clock or biometric behavior.
-// Real behavior: DEVICE, commit 16.
+// Real behavior: DEVICE.
 
 private struct StubClock: SessionClock {
     let instant: SessionInstant

@@ -8,7 +8,7 @@ import Testing
 
 @testable import BiometricSessionLocalAuth
 
-// Context that mimics one real behavior (UNKNOWN, verify on DEVICE):
+// Context that mimics one real behavior (verify on DEVICE):
 // biometryType is .none until canEvaluatePolicy has been called.
 private final class StatefulFakeContext: LAContextProviding {
     private var evaluated = false

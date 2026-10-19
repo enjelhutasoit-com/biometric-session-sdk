@@ -8,8 +8,8 @@ import Testing
 @testable import BiometricSessionLocalAuth
 
 // Smoke tests only. The real result depends on the machine:
-// SIMULATOR/host: depends on the machine and simulator menu. UNKNOWN exact values.
-// DEVICE: needed for real behavior (commit 16).
+// SIMULATOR/host: depends on the machine and simulator menu.
+// DEVICE: needed for real behavior.
 
 @Suite("SystemLAContext smoke")
 struct SystemLAContextTests {
@@ -29,7 +29,7 @@ struct SystemLAContextTests {
         if case .failure(let error) = context.canEvaluatePolicy(
             .deviceOwnerAuthenticationWithBiometrics
         ) {
-            // UNKNOWN: domain is always LAError.errorDomain on every host.
+            // Domain is always LAError.errorDomain on every host.
             // Verify by: running on host, simulator, device. Soften if it fails.
             #expect(error.domain == LAError.errorDomain)
         }
@@ -38,7 +38,7 @@ struct SystemLAContextTests {
     @Test("biometryType is a known value")
     func biometryTypeIsKnown() {
         let context = SystemLAContext()
-        // Read after canEvaluatePolicy. Before it, the value may be .none. UNKNOWN: verify by Apple doc.
+        // Read after canEvaluatePolicy. Before it, the value may be .none.
         _ = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics)
         let type = context.biometryType
         #expect([LABiometryType.none, .touchID, .faceID].contains(type))
