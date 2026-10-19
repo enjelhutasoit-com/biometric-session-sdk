@@ -30,6 +30,8 @@ public struct BiometricSessionError: Error, Sendable, Hashable {
         case passcodeNotSet
         /// Biometry hardware is missing or not supported.
         case biometryUnavailable
+        /// A configuration value was rejected, for example a negative timeout.
+        case invalidPolicy
         /// A failure this library does not recognize yet.
         case unknown
     }
@@ -92,6 +94,8 @@ extension BiometricSessionError.Code {
             return "This device has no passcode."
         case .biometryUnavailable:
             return "Biometry is missing or not supported on this device."
+        case .invalidPolicy:
+            return "A policy value is out of range."
         case .unknown:
             return "An unrecognized failure occurred."
         }
@@ -115,6 +119,8 @@ extension BiometricSessionError.Code {
             return "The user sets a device passcode in Settings. No fallback exists until then."
         case .biometryUnavailable:
             return "Another sign-in method. Biometry cannot be used on this device."
+        case .invalidPolicy:
+            return "Finite intervals of zero or more, and at least one allowed attempt."
         case .unknown:
             return "Log the error and offer another sign-in method."
         }
