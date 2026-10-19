@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  XCODE_APP: /Applications/Xcode_16.2.app
+
+jobs:
+  lint:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: |
+          test -d "$XCODE_APP" || { echo "Missing $XCODE_APP"; ls /Applications | grep -i xcode; exit 1; }
+          sudo xcode-select -s "$XCODE_APP"
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+          uname -m
+      - name: Guard Swift version
+        run: swift --version 2>&1 | grep -q "Swift version 6.0"
+      - name: Lint
+        run: ./Scripts/lint.sh
+
+  test:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: |
+          test -d "$XCODE_APP" || { echo "Missing $XCODE_APP"; ls /Applications | grep -i xcode; exit 1; }
+          sudo xcode-select -s "$XCODE_APP"
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+          uname -m
+      - name: Guard Swift version
+        run: swift --version 2>&1 | grep -q "Swift version 6.0"
+      - name: Build
+        run: swift build
+      - name: Test
+        run: swift test
+
+  ios-build:
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: |
+          test -d "$XCODE_APP" || { echo "Missing $XCODE_APP"; ls /Applications | grep -i xcode; exit 1; }
+          sudo xcode-select -s "$XCODE_APP"
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+          uname -m
+      - name: Build for iOS Simulator (deployment target from Package.swift)
+        run: |
+          xcodebuild build \
+            -scheme BiometricSessionCore \
+            -destination 'generic/platform=iOS Simulator'
