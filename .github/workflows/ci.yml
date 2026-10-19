@@ -75,3 +75,8 @@ jobs:
           xcodebuild build \
             -scheme BiometricSession \
             -destination 'generic/platform=iOS Simulator'
+      - name: Build TestSupport for iOS Simulator
+        run: |
+          xcodebuild build \
+            -scheme BiometricSessionTestSupport \
+            -destination 'generic/platform=iOS Simulator'
