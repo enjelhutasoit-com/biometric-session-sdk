@@ -73,5 +73,5 @@ jobs:
       - name: Build for iOS Simulator (deployment target from Package.swift)
         run: |
           xcodebuild build \
-            -scheme BiometricSessionCore \
+            -scheme BiometricSession \
             -destination 'generic/platform=iOS Simulator'
