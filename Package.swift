@@ -12,17 +12,27 @@ let package = Package(
     products: [
         .library(
             name: "BiometricSessionCore",
-            targets: ["BiometricSessionCore"]),
+            targets: ["BiometricSessionCore"]
+        ),
         .library(
             name: "BiometricSessionTestSupport",
             targets: ["BiometricSessionTestSupport"]
         ),
+        .library(
+            name: "BiometricSessionLocalAuth",
+            targets: ["BiometricSessionLocalAuth"]
+        ),
     ],
     targets: [
         .target(
-            name: "BiometricSessionCore"),
+            name: "BiometricSessionCore"
+        ),
         .target(
             name: "BiometricSessionTestSupport",
+            dependencies: ["BiometricSessionCore"]
+        ),
+        .target(
+            name: "BiometricSessionLocalAuth",
             dependencies: ["BiometricSessionCore"]
         ),
         .testTarget(
@@ -32,6 +42,10 @@ let package = Package(
         .testTarget(
             name: "BiometricSessionTestSupportTests",
             dependencies: ["BiometricSessionCore", "BiometricSessionTestSupport"]
+        ),
+        .testTarget(
+            name: "BiometricSessionLocalAuthTests",
+            dependencies: ["BiometricSessionCore", "BiometricSessionLocalAuth"]
         ),
     ],
     swiftLanguageModes: [.v6]
