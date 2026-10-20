@@ -68,7 +68,7 @@ extension BiometricSessionError: CustomStringConvertible {
 
 extension BiometricSessionError.Code {
     // UNKNOWN: this page still resolves.
-    // Verify by: open it in a browser. Replaced by repo docs in commit 17.
+    // Verify by: open it in a browser.
     private static let referenceURL: URL = {
         // Literal is valid. The https test fails if this is ever edited into an invalid URL.
         URL(string: "https://developer.apple.com/documentation/localauthentication/laerror")!
