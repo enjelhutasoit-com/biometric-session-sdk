@@ -50,4 +50,7 @@ struct SystemLAContext: LAContextProviding {
     var biometryType: LABiometryType {
         context.biometryType
     }
+    var evaluatedPolicyDomainState: Data? {
+        context.evaluatedPolicyDomainState
+    }
 }

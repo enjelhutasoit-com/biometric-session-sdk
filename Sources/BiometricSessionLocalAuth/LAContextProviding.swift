@@ -2,6 +2,7 @@
 // Copyright (c) 2026 Enjel Hutasoit
 //
 
+import Foundation
 import LocalAuthentication
 
 /// The slice of `LAContext` this library uses.
@@ -22,6 +23,9 @@ protocol LAContextProviding {
 
     /// The biometry type. Meaningful after `canEvaluatePolicy`.
     var biometryType: LABiometryType { get }
+    /// The system's enrollment fingerprint. Meaningful after a successful `canEvaluatePolicy`.
+    /// UNKNOWN: exact timing. Verify by: Apple doc and DEVICE.
+    var evaluatedPolicyDomainState: Data? { get }
 }
 
 /// Creates a new context for each operation.
