@@ -66,6 +66,10 @@ Timeouts and attempt limits are configurable policy defaults, not standards.
 - Swift 6.0 toolchain (Xcode 16)
 - iOS 14 deployment target (see `Package.swift`)
 
+Setup details: [Info.plist guide](Docs/InfoPlist.md).
+Tested behavior per environment: [simulator vs device matrix](Docs/SimulatorVsDevice.md).
+Many cells are still UNKNOWN. Read them before relying on a behavior.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
