@@ -23,6 +23,14 @@ private final class StatefulFakeContext: LAContextProviding {
         return .success(())
     }
 
+    func evaluatePolicy(
+        _ policy: LAPolicy,
+        localizedReason: String
+    ) async -> Result<Void, NSError> {
+        evaluated = true
+        return .success(())
+    }
+
     var biometryType: LABiometryType {
         evaluated ? typeAfterEvaluate : .none
     }
