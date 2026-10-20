@@ -34,6 +34,7 @@ private final class StatefulFakeContext: LAContextProviding {
     var biometryType: LABiometryType {
         evaluated ? typeAfterEvaluate : .none
     }
+    var evaluatedPolicyDomainState: Data? { nil }
 }
 
 private final class CallCounter: @unchecked Sendable {

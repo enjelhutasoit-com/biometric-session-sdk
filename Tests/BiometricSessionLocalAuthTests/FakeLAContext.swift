@@ -11,6 +11,7 @@ struct FakeLAContext: LAContextProviding {
     var canEvaluateResult: Result<Void, NSError> = .success(())
     var evaluateResult: Result<Void, NSError> = .success(())
     var biometryTypeValue: LABiometryType = .none
+    var domainStateValue: Data?
     var recorder: PolicyRecorder?
 
     func canEvaluatePolicy(_ policy: LAPolicy) -> Result<Void, NSError> {
@@ -27,6 +28,7 @@ struct FakeLAContext: LAContextProviding {
     }
 
     var biometryType: LABiometryType { biometryTypeValue }
+    var evaluatedPolicyDomainState: Data? { domainStateValue }
 }
 
 /// Records what the adapter asked the system. Thread-safe.
