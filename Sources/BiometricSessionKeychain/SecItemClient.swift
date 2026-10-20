@@ -14,6 +14,16 @@ struct SecItemClient: KeychainClient {
         SecItemAdd(KeychainQueries.add(key: key, data: data) as CFDictionary, nil)
     }
 
+    func addGated(key: KeychainItemKey, data: Data) -> OSStatus {
+        switch KeychainAccessControl.biometryCurrentSet() {
+        case .failure(let failure):
+            return failure.status
+        case .success(let control):
+            let query = KeychainQueries.addGated(key: key, data: data, accessControl: control)
+            return SecItemAdd(query as CFDictionary, nil)
+        }
+    }
+
     func read(key: KeychainItemKey) -> KeychainReadResult {
         var result: CFTypeRef?
         let status = SecItemCopyMatching(KeychainQueries.read(key: key) as CFDictionary, &result)

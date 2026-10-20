@@ -16,6 +16,7 @@ private struct StubKeychain: KeychainClient {
     let data: Data?
 
     func add(key: KeychainItemKey, data: Data) -> OSStatus { status }
+    func addGated(key: KeychainItemKey, data: Data) -> OSStatus { status }
     func read(key: KeychainItemKey) -> KeychainReadResult {
         KeychainReadResult(status: status, data: data)
     }
@@ -41,6 +42,7 @@ struct KeychainClientContractTests {
         #expect(client.read(key: key).data == Data([7]))
         #expect(client.add(key: key, data: Data([7])) == errSecSuccess)
         #expect(client.update(key: key, data: Data([8])) == errSecSuccess)
+        #expect(client.addGated(key: key, data: Data([7])) == errSecSuccess)
     }
 
     @Test("Client and result are Sendable")

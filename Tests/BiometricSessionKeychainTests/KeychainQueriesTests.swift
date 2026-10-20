@@ -66,11 +66,48 @@ struct KeychainQueriesTests {
         #expect(query[kSecAttrSynchronizable as String] as? Bool != true)
     }
 
-    @Test("Access control is not used yet")
-    func noAccessControlYet() {
-        // Fails on purpose. Add access control later. Review then.
+    @Test("Plain add has no access control")
+    func plainAddHasNoAccessControl() {
         let query = KeychainQueries.add(key: Self.key, data: payload)
         #expect(query[kSecAttrAccessControl as String] == nil)
+    }
+
+    // UNKNOWN: SecAccessControlCreateWithFlags with empty flags succeeds on the host.
+    // Verify by: swift test.
+    private func makeAccessControl() throws -> SecAccessControl {
+        var error: Unmanaged<CFError>?
+        let control = SecAccessControlCreateWithFlags(
+            nil,
+            kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+            [],
+            &error
+        )
+        return try #require(control)
+    }
+
+    @Test("Gated add carries access control and never kSecAttrAccessible")
+    func gatedAdd() throws {
+        let query = KeychainQueries.addGated(
+            key: Self.key,
+            data: payload,
+            accessControl: try makeAccessControl()
+        )
+        #expect(query[kSecAttrAccessControl as String] != nil)
+        // The two attributes must not be combined.
+        #expect(query[kSecAttrAccessible as String] == nil)
+        #expect(query[kSecValueData as String] as? Data == payload)
+    }
+
+    @Test("Gated add is scoped and not synchronizable")
+    func gatedAddScoped() throws {
+        let query = KeychainQueries.addGated(
+            key: Self.key,
+            data: payload,
+            accessControl: try makeAccessControl()
+        )
+        #expect(string(query, kSecAttrService) == "svc")
+        #expect(string(query, kSecAttrAccount) == "acc")
+        #expect(query[kSecAttrSynchronizable as String] as? Bool != true)
     }
 
     // MARK: Success paths.

@@ -16,6 +16,7 @@ struct KeychainReadResult: Sendable {
 /// It returns raw `OSStatus`. Mapping to typed errors later.
 protocol KeychainClient: Sendable {
     func add(key: KeychainItemKey, data: Data) -> OSStatus
+    func addGated(key: KeychainItemKey, data: Data) -> OSStatus
     func read(key: KeychainItemKey) -> KeychainReadResult
     func update(key: KeychainItemKey, data: Data) -> OSStatus
     func delete(key: KeychainItemKey) -> OSStatus
