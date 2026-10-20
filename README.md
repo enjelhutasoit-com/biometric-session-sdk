@@ -5,7 +5,7 @@ Zero third-party dependencies.
 
 ## Status
 
-`v0.2.0`: system adapter.
+`v0.3.0`: enrollment.
 
 Included:
 
@@ -14,13 +14,14 @@ Included:
 - `SessionClock` and `BiometricAuthenticating` protocols.
 - `LocalAuthAuthenticator`: capability check and biometric prompt,
   with optional passcode fallback (off by default).
+- `DomainState` and `EnrollmentChange`: compare enrollment fingerprints.
+- `BiometricSecretStore`: Keychain secret readable only after biometry.
 - Test fakes: `ManualClock`, `FakeAuthenticator`.
 
 Not included yet:
 
-- Keychain storage.
-- Enrollment-change detection.
-- Session controller, timeouts, state stream.
+- A public way to read the current domain state.
+- Session controller, timeouts, attempt limit, step-up, state stream.
 
 Version 0.x: the API may change in any release.
 Real device behavior is mostly unverified. See the
@@ -42,7 +43,7 @@ Not in scope: UI screens, networking, jailbreak detection, Secure Enclave signin
 ## Install
 
 ```swift
-.package(url: "https://github.com/enjelhutasoit-com/biometric-session-sdk.git", from: "0.2.0")
+.package(url: "https://github.com/enjelhutasoit-com/biometric-session-sdk.git", from: "0.3.0")
 ```
 
 Add products to your targets:
@@ -50,6 +51,7 @@ Add products to your targets:
 ```swift
 .product(name: "BiometricSessionCore", package: "BiometricSession"),
 .product(name: "BiometricSessionLocalAuth", package: "BiometricSession"),
+.product(name: "BiometricSessionKeychain", package: "BiometricSession"),
 // Test targets only:
 .product(name: "BiometricSessionTestSupport", package: "BiometricSession"),
 ```
