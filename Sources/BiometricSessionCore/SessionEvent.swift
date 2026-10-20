@@ -21,4 +21,6 @@ enum SessionEvent: Sendable, Hashable {
     case signOutRequested
     /// The biometric enrollment changed, or cannot be proven unchanged.
     case enrollmentInvalidated
+    /// No user activity for longer than the policy allows.
+    case inactivityTimedOut
 }

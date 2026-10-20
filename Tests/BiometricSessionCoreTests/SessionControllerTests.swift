@@ -12,9 +12,10 @@ struct SessionControllerTests {
     private static let failure = BiometricSessionError(code: .authenticationFailed)
 
     private func make(
-        _ fake: FakeAuthenticator = FakeAuthenticator()
+        _ fake: FakeAuthenticator = FakeAuthenticator(),
+        clock: ManualClock = ManualClock()
     ) -> (SessionController, FakeAuthenticator) {
-        (SessionController(authenticator: fake), fake)
+        (SessionController(authenticator: fake, clock: clock), fake)
     }
 
     // MARK: Failure paths first.
@@ -190,6 +191,8 @@ struct SessionControllerTests {
     func isSendable() {
         // Compile-time check.
         func requireSendable<T: Sendable>(_ value: T) {}
-        requireSendable(SessionController(authenticator: FakeAuthenticator()))
+        requireSendable(
+            SessionController(authenticator: FakeAuthenticator(), clock: ManualClock())
+        )
     }
 }
