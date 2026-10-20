@@ -89,3 +89,8 @@ jobs:
           xcodebuild build \
             -scheme BiometricSessionLocalAuth \
             -destination 'generic/platform=iOS Simulator'
+      - name: Build Keychain for iOS Simulator
+        run: |
+          xcodebuild build \
+            -scheme BiometricSessionKeychain \
+            -destination 'generic/platform=iOS Simulator'
