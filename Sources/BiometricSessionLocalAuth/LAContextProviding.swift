@@ -14,6 +14,12 @@ protocol LAContextProviding {
     /// Returns the system error instead of throwing, so fakes stay simple.
     func canEvaluatePolicy(_ policy: LAPolicy) -> Result<Void, NSError>
 
+    /// Shows the system prompt. Returns the system error instead of throwing.
+    func evaluatePolicy(
+        _ policy: LAPolicy,
+        localizedReason: String
+    ) async -> Result<Void, NSError>
+
     /// The biometry type. Meaningful after `canEvaluatePolicy`.
     var biometryType: LABiometryType { get }
 }
