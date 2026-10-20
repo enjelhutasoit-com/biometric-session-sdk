@@ -27,6 +27,7 @@ public actor SessionController {
     private var failedAttempts = 0
     private var lastAuthentication: SessionInstant?
     private var subscribers: [Int: AsyncStream<SessionState>.Continuation] = [:]
+    private let monitor: EnrollmentMonitor?
     private var nextSubscriberID = 0
     // Bumped on every change outside the unlock path. An unlock result
     // from an older generation is stale and must not change state.
@@ -38,15 +39,16 @@ public actor SessionController {
     /// Creates a controller. It starts in `.signedOut`.
     ///
     /// Public: the normal way to create one. The clock is required
-    /// because the library has no production clock yet.
     public init(
         authenticator: any BiometricAuthenticating,
         clock: any SessionClock,
-        policy: SessionPolicy = .default
+        policy: SessionPolicy = .default,
+        enrollment: EnrollmentMonitor? = nil
     ) {
         self.authenticator = authenticator
         self.clock = clock
         self.policy = policy
+        self.monitor = enrollment
     }
 
     /// The current state.
@@ -76,9 +78,25 @@ public actor SessionController {
     }
 
     /// The app finished its own sign-in. Starts the inactivity window.
-    public func signIn() {
+    ///
+    /// With an `EnrollmentMonitor`, it also saves the current enrollment
+    /// fingerprint as the baseline. If that fails the session signs out.
+    public func signIn() async {
         apply(.signedIn)
         markActiveIfUnlocked()
+        guard let monitor else { return }
+        let attempt = generation
+        let current = await monitor.provider.currentDomainState()
+        do {
+            if let current {
+                try await monitor.store.save(current)
+            } else {
+                try await monitor.store.clear()
+            }
+        } catch {
+            // No baseline means the next check would fail anyway. Fail closed.
+            if generation == attempt { apply(.signOutRequested) }
+        }
     }
 
     /// Locks the session. A prompt already on screen is not closed.
@@ -137,16 +155,19 @@ public actor SessionController {
     ///
     /// Locks when the grace is over or the clock went backwards.
     /// Without a prior background call it changes nothing.
-    public func appWillEnterForeground() {
+    public func appWillEnterForeground() async {
         let since = backgroundedAt
         backgroundedAt = nil
-        guard current == .unlocked, let since else { return }
-        let elapsed = clock.now().duration(since: since)
-        if elapsed < 0 || elapsed >= policy.backgroundGrace {
-            apply(.backgroundGraceExpired)
-            return
+        if current == .unlocked, let since {
+            let elapsed = clock.now().duration(since: since)
+            if elapsed < 0 || elapsed >= policy.backgroundGrace {
+                apply(.backgroundGraceExpired)
+            } else {
+                evaluateTimeouts()
+            }
         }
-        evaluateTimeouts()
+        guard current == .unlocked || current == .locked else { return }
+        if await enrollmentHasChanged() { apply(.enrollmentInvalidated) }
     }
 
     /// Asks the system to authenticate. Only works from `.locked`.
@@ -158,6 +179,10 @@ public actor SessionController {
         guard current == .locked else { return }
         apply(.unlockRequested)
         let attempt = generation
+
+        // Invalidate even if the session moved on meanwhile. That direction is safe.
+        if await enrollmentHasChanged() { throw invalidateForEnrollment() }
+        guard isFresh(attempt) else { return }
 
         do {
             try await authenticator.authenticate(reason: reason)
@@ -190,6 +215,11 @@ public actor SessionController {
     public func authorizeSensitiveAction(reason: String) async throws {
         evaluateTimeouts()
         guard current == .unlocked else {
+            throw BiometricSessionError(code: .sessionNotUnlocked)
+        }
+        let checked = generation
+        if await enrollmentHasChanged() { throw invalidateForEnrollment() }
+        guard generation == checked, current == .unlocked else {
             throw BiometricSessionError(code: .sessionNotUnlocked)
         }
         if isFreshAuthentication() { return }
@@ -256,5 +286,20 @@ public actor SessionController {
 
     private func removeSubscriber(_ id: Int) {
         subscribers[id] = nil
+    }
+
+    // true when the enrollment changed or cannot be proven unchanged.
+    private func enrollmentHasChanged() async -> Bool {
+        guard let monitor else { return false }
+        let stored = await monitor.store.load()
+        let current = await monitor.provider.currentDomainState()
+        // Nothing enrolled then and now: there is no biometry to protect.
+        if stored == nil, current == nil { return false }
+        return EnrollmentChange.evaluate(stored: stored, current: current).sessionEvent != nil
+    }
+
+    private func invalidateForEnrollment() -> BiometricSessionError {
+        apply(.enrollmentInvalidated)
+        return BiometricSessionError(code: .enrollmentChanged)
     }
 }
