@@ -159,9 +159,10 @@ struct FailedAttemptLimitTests {
         #expect(await controller.state == .locked)
     }
 
-    @Test("Sign in after sign out starts from zero")
-    func signInResets() async throws {
-        let (controller, fake) = try await lockedController(maxAttempts: 2)
+    @Test("Sign out resets the count")
+    func signOutResets() async throws {
+        let (controller, fake) = try await lockedController()
+        await attempt(controller, fake, .failure(Self.mismatch))
         await attempt(controller, fake, .failure(Self.mismatch))
         await controller.signOut()
         await controller.signIn()
