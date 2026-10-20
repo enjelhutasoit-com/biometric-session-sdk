@@ -63,6 +63,31 @@ struct SessionReducerTests {
         #expect(reduce(.unlocking, .unlockRequested) == .unlocking)
     }
 
+    @Test("Enrollment invalidation signs out from every state", arguments: SessionState.allCases)
+    func invalidationAlwaysSignsOut(state: SessionState) {
+        #expect(reduce(state, .enrollmentInvalidated) == .signedOut)
+    }
+
+    @Test("A successful prompt arriving after invalidation does not unlock")
+    func successAfterInvalidationIsIgnored() {
+        var state = SessionState.locked
+        state = reduce(state, .unlockRequested)
+        #expect(state == .unlocking)
+        state = reduce(state, .enrollmentInvalidated)
+        #expect(state == .signedOut)
+        state = reduce(state, .unlockSucceeded)  // late result arrives
+        #expect(state == .signedOut)
+    }
+
+    @Test("After invalidation only a new sign in reaches unlocked")
+    func recoveryNeedsSignIn() {
+        var state = reduce(.unlocked, .enrollmentInvalidated)
+        state = reduce(state, .unlockRequested)
+        #expect(state == .signedOut)
+        state = reduce(state, .signedIn)
+        #expect(state == .unlocked)
+    }
+
     // MARK: Success paths.
 
     @Test("Normal unlock flow")
@@ -108,7 +133,7 @@ struct SessionReducerTests {
         #expect(reduce(state, event) == reduce(state, event))
     }
 
-    // MARK: Full table. 4 states x 6 events = 24 rows.
+    // MARK: Full table. 4 states x 7 events = 28 rows.
 
     struct Row: Sendable {
         let state: SessionState
@@ -126,6 +151,7 @@ struct SessionReducerTests {
         Row(state: .locked, event: someFailure, expected: .locked),
         Row(state: .locked, event: .lockRequested, expected: .locked),
         Row(state: .locked, event: .signOutRequested, expected: .signedOut),
+        Row(state: .locked, event: .enrollmentInvalidated, expected: .signedOut),
         // unlocking
         Row(state: .unlocking, event: .signedIn, expected: .unlocking),
         Row(state: .unlocking, event: .unlockRequested, expected: .unlocking),
@@ -133,6 +159,7 @@ struct SessionReducerTests {
         Row(state: .unlocking, event: someFailure, expected: .locked),
         Row(state: .unlocking, event: .lockRequested, expected: .locked),
         Row(state: .unlocking, event: .signOutRequested, expected: .signedOut),
+        Row(state: .unlocking, event: .enrollmentInvalidated, expected: .signedOut),
         // unlocked
         Row(state: .unlocked, event: .signedIn, expected: .unlocked),
         Row(state: .unlocked, event: .unlockRequested, expected: .unlocked),
@@ -140,6 +167,7 @@ struct SessionReducerTests {
         Row(state: .unlocked, event: someFailure, expected: .unlocked),
         Row(state: .unlocked, event: .lockRequested, expected: .locked),
         Row(state: .unlocked, event: .signOutRequested, expected: .signedOut),
+        Row(state: .unlocked, event: .enrollmentInvalidated, expected: .signedOut),
         // signedOut
         Row(state: .signedOut, event: .signedIn, expected: .unlocked),
         Row(state: .signedOut, event: .unlockRequested, expected: .signedOut),
@@ -147,6 +175,7 @@ struct SessionReducerTests {
         Row(state: .signedOut, event: someFailure, expected: .signedOut),
         Row(state: .signedOut, event: .lockRequested, expected: .signedOut),
         Row(state: .signedOut, event: .signOutRequested, expected: .signedOut),
+        Row(state: .signedOut, event: .enrollmentInvalidated, expected: .signedOut),
     ]
 
     @Test("Transition table", arguments: table)
@@ -156,9 +185,9 @@ struct SessionReducerTests {
 
     @Test("Table covers every state and every event kind")
     func tableIsComplete() {
-        // 6 event kinds today. Fails when a state or event is added without a row.
+        // 7 event kinds today. Fails when a state or event is added without a row.
         // Update the number of event kinds here on purpose.
-        let eventKinds = 6
+        let eventKinds = 7
         #expect(Self.table.count == SessionState.allCases.count * eventKinds)
     }
 }

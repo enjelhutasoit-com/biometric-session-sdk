@@ -19,4 +19,6 @@ enum SessionEvent: Sendable, Hashable {
     case lockRequested
     /// The app asked to sign out.
     case signOutRequested
+    /// The biometric enrollment changed, or cannot be proven unchanged.
+    case enrollmentInvalidated
 }
