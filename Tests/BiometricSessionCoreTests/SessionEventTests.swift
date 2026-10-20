@@ -40,6 +40,7 @@ struct SessionEventTests {
             .signOutRequested,
             .enrollmentInvalidated,
             .inactivityTimedOut,
+            .backgroundGraceExpired,
         ]
         #expect(Set(events).count == events.count)
     }

@@ -133,7 +133,7 @@ struct SessionReducerTests {
         #expect(reduce(state, event) == reduce(state, event))
     }
 
-    // MARK: Full table. 4 states x 8 events = 32 rows.
+    // MARK: Full table. 4 states x 9 events = 36 rows.
 
     struct Row: Sendable {
         let state: SessionState
@@ -153,6 +153,7 @@ struct SessionReducerTests {
         Row(state: .locked, event: .signOutRequested, expected: .signedOut),
         Row(state: .locked, event: .enrollmentInvalidated, expected: .signedOut),
         Row(state: .locked, event: .inactivityTimedOut, expected: .locked),
+        Row(state: .locked, event: .backgroundGraceExpired, expected: .locked),
         // unlocking
         Row(state: .unlocking, event: .signedIn, expected: .unlocking),
         Row(state: .unlocking, event: .unlockRequested, expected: .unlocking),
@@ -162,6 +163,7 @@ struct SessionReducerTests {
         Row(state: .unlocking, event: .signOutRequested, expected: .signedOut),
         Row(state: .unlocking, event: .enrollmentInvalidated, expected: .signedOut),
         Row(state: .unlocking, event: .inactivityTimedOut, expected: .unlocking),
+        Row(state: .unlocking, event: .backgroundGraceExpired, expected: .unlocking),
         // unlocked
         Row(state: .unlocked, event: .signedIn, expected: .unlocked),
         Row(state: .unlocked, event: .unlockRequested, expected: .unlocked),
@@ -171,6 +173,7 @@ struct SessionReducerTests {
         Row(state: .unlocked, event: .signOutRequested, expected: .signedOut),
         Row(state: .unlocked, event: .enrollmentInvalidated, expected: .signedOut),
         Row(state: .unlocked, event: .inactivityTimedOut, expected: .locked),
+        Row(state: .unlocked, event: .backgroundGraceExpired, expected: .locked),
         // signedOut
         Row(state: .signedOut, event: .signedIn, expected: .unlocked),
         Row(state: .signedOut, event: .unlockRequested, expected: .signedOut),
@@ -180,6 +183,7 @@ struct SessionReducerTests {
         Row(state: .signedOut, event: .signOutRequested, expected: .signedOut),
         Row(state: .signedOut, event: .enrollmentInvalidated, expected: .signedOut),
         Row(state: .signedOut, event: .inactivityTimedOut, expected: .signedOut),
+        Row(state: .signedOut, event: .backgroundGraceExpired, expected: .signedOut),
     ]
 
     @Test("Transition table", arguments: table)
@@ -189,9 +193,9 @@ struct SessionReducerTests {
 
     @Test("Table covers every state and every event kind")
     func tableIsComplete() {
-        // 8 event kinds today. Fails when a state or event is added without a row.
+        // 9 event kinds today. Fails when a state or event is added without a row.
         // Update the number of event kinds here on purpose.
-        let eventKinds = 8
+        let eventKinds = 9
         #expect(Self.table.count == SessionState.allCases.count * eventKinds)
     }
 }

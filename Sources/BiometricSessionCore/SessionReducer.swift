@@ -22,7 +22,8 @@ enum SessionReducer {
             return .locked
         case (.unlocking, .lockRequested),
             (.unlocked, .lockRequested),
-            (.unlocked, .inactivityTimedOut):
+            (.unlocked, .inactivityTimedOut),
+            (.unlocked, .backgroundGraceExpired):
             return .locked
         default:
             return state
