@@ -32,6 +32,14 @@ public struct BiometricSessionError: Error, Sendable, Hashable {
         case biometryUnavailable
         /// A configuration value was rejected, for example a negative timeout.
         case invalidPolicy
+        /// The Keychain item does not exist.
+        case keychainItemNotFound
+        /// The Keychain refused access: canceled, failed authentication, or not allowed now.
+        case keychainAccessDenied
+        /// An item with the same key already exists.
+        case keychainDuplicateItem
+        /// Any other Keychain failure. The status number is in `reason`.
+        case keychainFailure
         /// A failure this library does not recognize yet.
         case unknown
     }
@@ -96,6 +104,14 @@ extension BiometricSessionError.Code {
             return "Biometry is missing or not supported on this device."
         case .invalidPolicy:
             return "A policy value is out of range."
+        case .keychainItemNotFound:
+            return "The Keychain item does not exist."
+        case .keychainAccessDenied:
+            return "The Keychain refused access."
+        case .keychainDuplicateItem:
+            return "A Keychain item with this key already exists."
+        case .keychainFailure:
+            return "A Keychain operation failed."
         case .unknown:
             return "An unrecognized failure occurred."
         }
@@ -121,6 +137,14 @@ extension BiometricSessionError.Code {
             return "Another sign-in method. Biometry cannot be used on this device."
         case .invalidPolicy:
             return "Finite intervals of zero or more, and at least one allowed attempt."
+        case .keychainItemNotFound:
+            return "Save the item first, or treat a missing item as signed out."
+        case .keychainAccessDenied:
+            return "The user completes authentication. Offer a retry or another sign-in method."
+        case .keychainDuplicateItem:
+            return "Update the existing item instead of adding."
+        case .keychainFailure:
+            return "Log the status number and offer another sign-in method."
         case .unknown:
             return "Log the error and offer another sign-in method."
         }

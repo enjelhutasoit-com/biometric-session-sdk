@@ -105,10 +105,10 @@ struct BiometricSessionErrorTests {
 
     // API pin.
 
-    @Test("Exactly ten codes exist")
+    @Test("Exactly fourteen codes exist")
     func codeCountIsPinned() {
         // Fails on purpose when a code is added.
         // Forces review of every switch and of the public API.
-        #expect(BiometricSessionError.Code.allCases.count == 10)
+        #expect(BiometricSessionError.Code.allCases.count == 14)
     }
 }
