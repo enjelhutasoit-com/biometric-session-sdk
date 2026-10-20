@@ -18,6 +18,7 @@ public actor SessionController {
     private let policy: SessionPolicy
     private var current: SessionState = .signedOut
     private var lastActivity: SessionInstant?
+    private var backgroundedAt: SessionInstant?
     // Bumped on every change outside the unlock path. An unlock result
     // from an older generation is stale and must not change state.
     private var generation = 0
@@ -77,6 +78,42 @@ public actor SessionController {
         apply(.inactivityTimedOut)
     }
 
+    /// The app left the foreground.
+    ///
+    /// During a prompt the session locks. While unlocked, the grace period starts.
+    /// With a grace of zero the session locks at once.
+    /// A second call while already in the background keeps the first time.
+    public func appDidEnterBackground() {
+        switch current {
+        case .unlocking:
+            apply(.lockRequested)
+        case .unlocked:
+            if policy.backgroundGrace == 0 {
+                apply(.backgroundGraceExpired)
+            } else if backgroundedAt == nil {
+                backgroundedAt = clock.now()
+            }
+        case .locked, .signedOut:
+            break
+        }
+    }
+
+    /// The app is back in the foreground.
+    ///
+    /// Locks when the grace is over or the clock went backwards.
+    /// Without a prior background call it changes nothing.
+    public func appWillEnterForeground() {
+        let since = backgroundedAt
+        backgroundedAt = nil
+        guard current == .unlocked, let since else { return }
+        let elapsed = clock.now().duration(since: since)
+        if elapsed < 0 || elapsed >= policy.backgroundGrace {
+            apply(.backgroundGraceExpired)
+            return
+        }
+        evaluateTimeouts()
+    }
+
     /// Asks the system to authenticate. Only works from `.locked`.
     ///
     /// - Throws: `BiometricSessionError` when authentication fails.
@@ -106,6 +143,7 @@ public actor SessionController {
 
     private func apply(_ event: SessionEvent) {
         generation += 1
+        backgroundedAt = nil
         current = SessionReducer.reduce(state: current, event: event)
     }
 
