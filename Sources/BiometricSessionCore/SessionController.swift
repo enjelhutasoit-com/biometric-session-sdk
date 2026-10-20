@@ -20,6 +20,7 @@ public actor SessionController {
     private var lastActivity: SessionInstant?
     private var backgroundedAt: SessionInstant?
     private var failedAttempts = 0
+    private var lastAuthentication: SessionInstant?
     // Bumped on every change outside the unlock path. An unlock result
     // from an older generation is stale and must not change state.
     private var generation = 0
@@ -138,8 +139,38 @@ public actor SessionController {
         if isFresh(attempt) {
             current = SessionReducer.reduce(state: current, event: .unlockSucceeded)
             failedAttempts = 0
+            lastAuthentication = clock.now()
             markActiveIfUnlocked()
         }
+    }
+
+    /// Proves the user is present before a sensitive action.
+    ///
+    /// Returns without a prompt while the last authentication is fresh
+    /// (`SessionPolicy.stepUpFreshness`). Otherwise asks the system again.
+    /// It never unlocks a session. A late success after the session changed
+    /// does not authorize anything.
+    /// This is a client-side check. A server must verify on its own.
+    ///
+    /// - Throws: `BiometricSessionError`. `.sessionNotUnlocked` when the
+    ///   session is not unlocked, or changed during the prompt.
+    public func authorizeSensitiveAction(reason: String) async throws {
+        evaluateTimeouts()
+        guard current == .unlocked else {
+            throw BiometricSessionError(code: .sessionNotUnlocked)
+        }
+        if isFreshAuthentication() { return }
+
+        let attempt = generation
+        do {
+            try await authenticator.authenticate(reason: reason)
+        } catch {
+            throw Self.typed(error)
+        }
+        guard generation == attempt, current == .unlocked else {
+            throw BiometricSessionError(code: .sessionNotUnlocked)
+        }
+        lastAuthentication = clock.now()
     }
 
     // MARK: Private
@@ -148,6 +179,7 @@ public actor SessionController {
         generation += 1
         backgroundedAt = nil
         current = SessionReducer.reduce(state: current, event: event)
+        if current != .unlocked { lastAuthentication = nil }
         if current == .signedOut { failedAttempts = 0 }
     }
 
@@ -174,5 +206,12 @@ public actor SessionController {
         if failedAttempts >= policy.maxFailedAttempts {
             apply(.attemptLimitReached)
         }
+    }
+
+    // Internal: tests check the freshness rule on its own.
+    func isFreshAuthentication() -> Bool {
+        guard let last = lastAuthentication else { return false }
+        let elapsed = clock.now().duration(since: last)
+        return elapsed >= 0 && elapsed < policy.stepUpFreshness
     }
 }

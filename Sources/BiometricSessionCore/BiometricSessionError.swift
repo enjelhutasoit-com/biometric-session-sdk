@@ -40,6 +40,8 @@ public struct BiometricSessionError: Error, Sendable, Hashable {
         case keychainDuplicateItem
         /// Any other Keychain failure. The status number is in `reason`.
         case keychainFailure
+        /// The action needs an unlocked session, but the session is not unlocked.
+        case sessionNotUnlocked
         /// A failure this library does not recognize yet.
         case unknown
     }
@@ -112,6 +114,8 @@ extension BiometricSessionError.Code {
             return "A Keychain item with this key already exists."
         case .keychainFailure:
             return "A Keychain operation failed."
+        case .sessionNotUnlocked:
+            return "The session is not unlocked."
         case .unknown:
             return "An unrecognized failure occurred."
         }
@@ -145,6 +149,8 @@ extension BiometricSessionError.Code {
             return "Update the existing item instead of adding."
         case .keychainFailure:
             return "Log the status number and offer another sign-in method."
+        case .sessionNotUnlocked:
+            return "Unlock the session first, then repeat the action."
         case .unknown:
             return "Log the error and offer another sign-in method."
         }
