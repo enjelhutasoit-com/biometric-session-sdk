@@ -28,6 +28,11 @@ Results are valid only for the OS and model written in the cell.
 | Missing `NSFaceIDUsageDescription` | UNKNOWN | UNKNOWN |
 | `biometryType` read before `canEvaluatePolicy` | UNKNOWN | UNKNOWN |
 | `biometryType` read after `canEvaluatePolicy` | UNKNOWN | UNKNOWN |
+| Keychain: load shows biometric prompt | UNKNOWN | UNKNOWN |
+| Keychain: load after biometric cancel | UNKNOWN | UNKNOWN |
+| Keychain: load after enrollment change | UNKNOWN | UNKNOWN |
+| Keychain: load after passcode removed | UNKNOWN | UNKNOWN |
+| Keychain: save over existing gated item | UNKNOWN | UNKNOWN |
 
 ## How to record a result
 

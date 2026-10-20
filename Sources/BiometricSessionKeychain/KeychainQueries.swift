@@ -25,6 +25,18 @@ enum KeychainQueries {
         return query
     }
 
+    static func addGated(
+        key: KeychainItemKey,
+        data: Data,
+        accessControl: SecAccessControl
+    ) -> [String: Any] {
+        var query = base(key)
+        query[kSecValueData as String] = data
+        // Never combine with kSecAttrAccessible. The protection class lives inside accessControl.
+        query[kSecAttrAccessControl as String] = accessControl
+        return query
+    }
+
     static func read(key: KeychainItemKey) -> [String: Any] {
         var query = base(key)
         query[kSecReturnData as String] = true
