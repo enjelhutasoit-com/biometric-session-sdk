@@ -29,6 +29,7 @@ public actor FakeAuthenticator: BiometricAuthenticating {
         case failure(BiometricSessionError)
     }
 
+    private var suspendedTotal = 0
     private var waiting: [Int: CheckedContinuation<Resolution, Never>] = [:]
     private var earlyResolutions: [Int: Resolution] = [:]
 
@@ -89,6 +90,7 @@ public actor FakeAuthenticator: BiometricAuthenticating {
         case .rawFailure(let error):
             throw error
         case .suspend:
+            suspendedTotal += 1
             let resolution: Resolution
             if let early = earlyResolutions.removeValue(forKey: call) {
                 resolution = early
@@ -117,17 +119,11 @@ public actor FakeAuthenticator: BiometricAuthenticating {
         }
     }
 
-    /// Returns once at least `callCount` calls are suspended or recorded.
+    /// Returns once at least `callCount` calls have entered the suspended state.
     /// Yields instead of sleeping, so no real time passes.
     public func waitUntilSuspended(callCount: Int = 1) async {
-        while waiting.count + earlyResolutions.count < callCount
-            && authenticateCallCount < callCount
-        {
-            await Task.yield()
-        }
-        while waiting.count < 1 && earlyResolutions.isEmpty {
+        while suspendedTotal < callCount {
             await Task.yield()
         }
     }
-
 }
