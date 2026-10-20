@@ -41,6 +41,7 @@ struct SessionEventTests {
             .enrollmentInvalidated,
             .inactivityTimedOut,
             .backgroundGraceExpired,
+            .attemptLimitReached,
         ]
         #expect(Set(events).count == events.count)
     }

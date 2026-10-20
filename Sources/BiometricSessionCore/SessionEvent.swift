@@ -25,4 +25,6 @@ enum SessionEvent: Sendable, Hashable {
     case inactivityTimedOut
     /// The app stayed in the background longer than the policy allows.
     case backgroundGraceExpired
+    /// Too many failed matches in a row.
+    case attemptLimitReached
 }
