@@ -16,14 +16,24 @@ public actor SessionController {
     private let authenticator: any BiometricAuthenticating
     private let clock: any SessionClock
     private let policy: SessionPolicy
-    private var current: SessionState = .signedOut
+    private var current: SessionState = .signedOut {
+        didSet {
+            // One place covers every path that changes state.
+            if current != oldValue { publish(current) }
+        }
+    }
     private var lastActivity: SessionInstant?
     private var backgroundedAt: SessionInstant?
     private var failedAttempts = 0
     private var lastAuthentication: SessionInstant?
+    private var subscribers: [Int: AsyncStream<SessionState>.Continuation] = [:]
+    private var nextSubscriberID = 0
     // Bumped on every change outside the unlock path. An unlock result
     // from an older generation is stale and must not change state.
     private var generation = 0
+
+    // Internal: tests check that finished streams are removed.
+    var subscriberCount: Int { subscribers.count }
 
     /// Creates a controller. It starts in `.signedOut`.
     ///
@@ -41,6 +51,29 @@ public actor SessionController {
 
     /// The current state.
     public var state: SessionState { current }
+
+    /// A stream of session states.
+    ///
+    /// The first element is the current state. After that, every change.
+    /// Equal states in a row are not repeated.
+    /// Only the newest unread state is kept. A slow consumer can miss
+    /// in-between states, but always gets the latest one.
+    /// It is a UI aid, not an audit log and not a security control.
+    /// The stream does not finish by itself yet.
+    ///
+    /// Public: clients react to state changes without polling.
+    public func states() -> AsyncStream<SessionState> {
+        let id = nextSubscriberID
+        nextSubscriberID += 1
+        return AsyncStream(SessionState.self, bufferingPolicy: .bufferingNewest(1)) {
+            continuation in
+            continuation.yield(current)
+            subscribers[id] = continuation
+            continuation.onTermination = { [weak self] _ in
+                Task { await self?.removeSubscriber(id) }
+            }
+        }
+    }
 
     /// The app finished its own sign-in. Starts the inactivity window.
     public func signIn() {
@@ -213,5 +246,15 @@ public actor SessionController {
         guard let last = lastAuthentication else { return false }
         let elapsed = clock.now().duration(since: last)
         return elapsed >= 0 && elapsed < policy.stepUpFreshness
+    }
+
+    private func publish(_ state: SessionState) {
+        for continuation in subscribers.values {
+            continuation.yield(state)
+        }
+    }
+
+    private func removeSubscriber(_ id: Int) {
+        subscribers[id] = nil
     }
 }
