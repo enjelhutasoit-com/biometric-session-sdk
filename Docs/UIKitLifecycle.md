@@ -1,12 +1,13 @@
 # UIKit lifecycle adapter
 
 ```swift
-let controller = SessionController(authenticator: authenticator, clock: clock)
+let controller = SessionController(
+    authenticator: authenticator,
+    clock: MonotonicSessionClock()
+)
 let adapter = LifecycleAdapter(controller: controller)
 adapter.start()
 ```
-
-You must supply a `SessionClock`. The library has no production clock yet.
 
 ## User activity
 

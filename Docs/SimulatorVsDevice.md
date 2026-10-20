@@ -33,6 +33,8 @@ Results are valid only for the OS and model written in the cell.
 | Keychain: load after enrollment change | UNKNOWN | UNKNOWN |
 | Keychain: load after passcode removed | UNKNOWN | UNKNOWN |
 | Keychain: save over existing gated item | UNKNOWN | UNKNOWN |
+| MonotonicSessionClock advances while device sleeps | UNKNOWN | UNKNOWN |
+| MonotonicSessionClock after changing date/time in Settings | UNKNOWN | UNKNOWN |
 
 ## How to record a result
 
