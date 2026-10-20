@@ -39,6 +39,7 @@ struct SessionEventTests {
             .lockRequested,
             .signOutRequested,
             .enrollmentInvalidated,
+            .inactivityTimedOut,
         ]
         #expect(Set(events).count == events.count)
     }
