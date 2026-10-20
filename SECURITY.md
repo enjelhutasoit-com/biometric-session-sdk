@@ -10,7 +10,7 @@ Server-side authorization is required for anything sensitive.
 ## Supported versions
 
 Only the latest release receives fixes.
-Current: `0.1.x`.
+Current: `0.2.x`.
 
 ## Reporting a vulnerability
 
