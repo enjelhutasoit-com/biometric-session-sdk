@@ -100,4 +100,32 @@ struct FakeAuthenticatorTests {
         let fake: any BiometricAuthenticating = FakeAuthenticator()
         #expect(await fake.capability() == .unavailable)
     }
+
+    @Test("A suspended call waits until resumed, then follows its result")
+    func suspendThenResume() async {
+        let fake = FakeAuthenticator()
+        await fake.enqueue(.suspend)
+        let task = Task { try await fake.authenticate(reason: "x") }
+        await fake.waitUntilSuspended()
+        #expect(await fake.authenticateCallCount == 1)
+        await fake.resume(with: .failure(BiometricSessionError(code: .userCancelled)))
+        do {
+            try await task.value
+            Issue.record("Expected throw")
+        } catch let error as BiometricSessionError {
+            #expect(error.code == .userCancelled)
+        } catch {
+            Issue.record("Wrong error type: \(error)")
+        }
+    }
+
+    @Test("Resume with success returns normally")
+    func suspendThenSucceed() async throws {
+        let fake = FakeAuthenticator()
+        await fake.enqueue(.suspend)
+        let task = Task { try await fake.authenticate(reason: "x") }
+        await fake.waitUntilSuspended()
+        await fake.resume(with: .success)
+        try await task.value
+    }
 }

@@ -45,7 +45,7 @@ let package = Package(
         ),
         .testTarget(
             name: "BiometricSessionCoreTests",
-            dependencies: ["BiometricSessionCore"]
+            dependencies: ["BiometricSessionCore", "BiometricSessionTestSupport"]
         ),
         .testTarget(
             name: "BiometricSessionTestSupportTests",

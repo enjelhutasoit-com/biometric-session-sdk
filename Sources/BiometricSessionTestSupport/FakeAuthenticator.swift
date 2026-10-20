@@ -12,12 +12,25 @@ import BiometricSessionCore
 /// so a forgotten script fails loudly instead of hanging.
 public actor FakeAuthenticator: BiometricAuthenticating {
     /// One scripted result for `authenticate(reason:)`.
-    public enum Outcome: Sendable, Hashable {
+    public enum Outcome: Sendable {
         /// The prompt succeeds.
         case success
         /// The prompt fails with this error.
         case failure(BiometricSessionError)
+        /// A non-typed error, to test how callers map foreign errors.
+        case rawFailure(any Error & Sendable)
+        /// The call waits until `resume(with:)`.
+        case suspend
     }
+
+    /// How a suspended call ends.
+    public enum Resolution: Sendable {
+        case success
+        case failure(BiometricSessionError)
+    }
+
+    private var waiting: [Int: CheckedContinuation<Resolution, Never>] = [:]
+    private var earlyResolutions: [Int: Resolution] = [:]
 
     private var capabilityResult: BiometricCapability
     private var outcomes: [Outcome] = []
@@ -59,6 +72,7 @@ public actor FakeAuthenticator: BiometricAuthenticating {
     /// - Throws: The queued failure, or `.unknown` if no outcome was queued.
     public func authenticate(reason: String) async throws {
         authenticateCallCount += 1
+        let call = authenticateCallCount
         reasons.append(reason)
         guard !outcomes.isEmpty else {
             throw BiometricSessionError(
@@ -72,6 +86,48 @@ public actor FakeAuthenticator: BiometricAuthenticating {
             return
         case .failure(let error):
             throw error
+        case .rawFailure(let error):
+            throw error
+        case .suspend:
+            let resolution: Resolution
+            if let early = earlyResolutions.removeValue(forKey: call) {
+                resolution = early
+            } else {
+                resolution = await withCheckedContinuation { waiting[call] = $0 }
+            }
+            switch resolution {
+            case .success: return
+            case .failure(let error): throw error
+            }
         }
     }
+
+    /// Resumes the oldest suspended call.
+    public func resume(with resolution: Resolution) {
+        if let call = waiting.keys.min() { resumeCall(call, with: resolution) }
+    }
+
+    /// Resumes the call with this 1-based number.
+    /// If it has not suspended yet, the result is kept for when it does.
+    public func resumeCall(_ call: Int, with resolution: Resolution) {
+        if let continuation = waiting.removeValue(forKey: call) {
+            continuation.resume(returning: resolution)
+        } else {
+            earlyResolutions[call] = resolution
+        }
+    }
+
+    /// Returns once at least `callCount` calls are suspended or recorded.
+    /// Yields instead of sleeping, so no real time passes.
+    public func waitUntilSuspended(callCount: Int = 1) async {
+        while waiting.count + earlyResolutions.count < callCount
+            && authenticateCallCount < callCount
+        {
+            await Task.yield()
+        }
+        while waiting.count < 1 && earlyResolutions.isEmpty {
+            await Task.yield()
+        }
+    }
+
 }
