@@ -10,7 +10,9 @@
 enum SessionReducer {
     static func reduce(state: SessionState, event: SessionEvent) -> SessionState {
         switch (state, event) {
-        case (_, .signOutRequested), (_, .enrollmentInvalidated):
+        case (_, .signOutRequested),
+            (_, .enrollmentInvalidated),
+            (_, .attemptLimitReached):
             return .signedOut
         case (.signedOut, .signedIn):
             return .unlocked

@@ -19,6 +19,7 @@ public actor SessionController {
     private var current: SessionState = .signedOut
     private var lastActivity: SessionInstant?
     private var backgroundedAt: SessionInstant?
+    private var failedAttempts = 0
     // Bumped on every change outside the unlock path. An unlock result
     // from an older generation is stale and must not change state.
     private var generation = 0
@@ -130,11 +131,13 @@ public actor SessionController {
             let mapped = Self.typed(error)
             if isFresh(attempt) {
                 current = SessionReducer.reduce(state: current, event: .unlockFailed(mapped))
+                countFailure(mapped)
             }
             throw mapped
         }
         if isFresh(attempt) {
             current = SessionReducer.reduce(state: current, event: .unlockSucceeded)
+            failedAttempts = 0
             markActiveIfUnlocked()
         }
     }
@@ -145,6 +148,7 @@ public actor SessionController {
         generation += 1
         backgroundedAt = nil
         current = SessionReducer.reduce(state: current, event: event)
+        if current == .signedOut { failedAttempts = 0 }
     }
 
     private func markActiveIfUnlocked() {
@@ -161,5 +165,14 @@ public actor SessionController {
             code: .unknown,
             reason: "Authenticator threw \(String(describing: type(of: error)))."
         )
+    }
+
+    // Only a failed match counts. Cancel, fallback, lockout and foreign errors do not.
+    private func countFailure(_ error: BiometricSessionError) {
+        guard error.code == .authenticationFailed else { return }
+        failedAttempts += 1
+        if failedAttempts >= policy.maxFailedAttempts {
+            apply(.attemptLimitReached)
+        }
     }
 }
