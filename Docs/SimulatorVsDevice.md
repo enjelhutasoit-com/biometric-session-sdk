@@ -35,6 +35,9 @@ Results are valid only for the OS and model written in the cell.
 | Keychain: save over existing gated item | UNKNOWN | UNKNOWN |
 | MonotonicSessionClock advances while device sleeps | UNKNOWN | UNKNOWN |
 | MonotonicSessionClock after changing date/time in Settings | UNKNOWN | UNKNOWN |
+| Baseline read while device is locked (app in background) | UNKNOWN | UNKNOWN |
+| Baseline survives app relaunch | UNKNOWN | UNKNOWN |
+| Baseline survives app delete and reinstall | UNKNOWN | UNKNOWN |
 
 ## How to record a result
 
