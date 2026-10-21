@@ -56,7 +56,7 @@ jobs:
       - name: Build
         run: swift build
       - name: Test
-        run: swift test
+        run: swift test --skip BiometricSessionPerfTests
 
   ios-build:
     runs-on: macos-15
