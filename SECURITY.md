@@ -2,6 +2,7 @@
 
 ## Scope and limits
 
+See `Docs/ThreatModel.md` for attackers, mitigations, and open questions.
 This library runs on the client.
 A jailbroken device, a hooked process, or a modified binary can bypass its checks.
 It is not a security boundary.
