@@ -28,6 +28,12 @@ public actor SessionController {
     private var lastAuthentication: SessionInstant?
     private var subscribers: [Int: AsyncStream<SessionState>.Continuation] = [:]
     private let monitor: EnrollmentMonitor?
+    // One prompt shared by step-up calls of the same generation.
+    private var inFlightStepUp: (token: Int, generation: Int, task: Task<Void, Error>)?
+    private var nextStepUpToken = 0
+
+    // Internal: tests wait until callers are really waiting.
+    private(set) var stepUpWaiterCount = 0
     private var nextSubscriberID = 0
     // Bumped on every change outside the unlock path. An unlock result
     // from an older generation is stale and must not change state.
@@ -212,6 +218,10 @@ public actor SessionController {
     ///
     /// - Throws: `BiometricSessionError`. `.sessionNotUnlocked` when the
     ///   session is not unlocked, or changed during the prompt.
+    ///
+    /// Calls made while a prompt for the same session is already on screen
+    /// share that prompt and its result. Their `reason` is ignored.
+    /// Cancelling the calling task does not close the prompt.
     public func authorizeSensitiveAction(reason: String) async throws {
         evaluateTimeouts()
         guard current == .unlocked else {
@@ -225,8 +235,11 @@ public actor SessionController {
         if isFreshAuthentication() { return }
 
         let attempt = generation
+        let task = stepUpTask(reason: reason, generation: attempt)
+        stepUpWaiterCount += 1
+        defer { stepUpWaiterCount -= 1 }
         do {
-            try await authenticator.authenticate(reason: reason)
+            try await task.value
         } catch {
             throw Self.typed(error)
         }
@@ -301,5 +314,31 @@ public actor SessionController {
     private func invalidateForEnrollment() -> BiometricSessionError {
         apply(.enrollmentInvalidated)
         return BiometricSessionError(code: .enrollmentChanged)
+    }
+
+    private func stepUpTask(reason: String, generation: Int) -> Task<Void, Error> {
+        if let pending = inFlightStepUp, pending.generation == generation {
+            return pending.task
+        }
+        let token = nextStepUpToken
+        nextStepUpToken += 1
+        let authenticator = self.authenticator
+        // The task clears itself before its result is delivered,
+        // so a later call never reuses a finished prompt.
+        let task = Task<Void, Error> {
+            do {
+                try await authenticator.authenticate(reason: reason)
+            } catch {
+                self.finishStepUp(token)
+                throw error
+            }
+            self.finishStepUp(token)
+        }
+        inFlightStepUp = (token, generation, task)
+        return task
+    }
+
+    private func finishStepUp(_ token: Int) {
+        if inFlightStepUp?.token == token { inFlightStepUp = nil }
     }
 }
