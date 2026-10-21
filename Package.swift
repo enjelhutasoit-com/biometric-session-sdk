@@ -75,6 +75,10 @@ let package = Package(
                 "BiometricSessionUIKit",
             ]
         ),
+        .testTarget(
+            name: "BiometricSessionPerfTests",
+            dependencies: ["BiometricSessionCore", "BiometricSessionTestSupport"]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )
