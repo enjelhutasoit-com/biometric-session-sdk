@@ -40,6 +40,8 @@ jobs:
         run: ./Scripts/check-docs.sh
       - name: Threat model check
         run: ./Scripts/check-threat-model.sh
+      - name: Examples check
+        run: ./Scripts/check-examples.sh
 
   test:
     runs-on: macos-15
@@ -129,3 +131,19 @@ jobs:
           sudo xcode-select -s "$XCODE_APP"
       - name: Build documentation
         run: ./Scripts/docbuild.sh
+
+  ios-demo:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: |
+          test -d "$XCODE_APP" || { echo "Missing $XCODE_APP"; exit 1; }
+          sudo xcode-select -s "$XCODE_APP"
+      - name: Build demo for iOS Simulator
+        run: |
+          xcodebuild build \
+            -project Examples/BiometricSessionDemo/BiometricSessionDemo.xcodeproj \
+            -scheme BiometricSessionDemo \
+            -destination 'generic/platform=iOS Simulator'
