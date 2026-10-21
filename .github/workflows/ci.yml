@@ -38,6 +38,8 @@ jobs:
         run: ./Scripts/check-concurrency.sh
       - name: Documentation catalog check
         run: ./Scripts/check-docs.sh
+      - name: Threat model check
+        run: ./Scripts/check-threat-model.sh
 
   test:
     runs-on: macos-15

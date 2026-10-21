@@ -77,6 +77,7 @@ Add `NSFaceIDUsageDescription` (see `Docs/InfoPlist.md`).
 
 ## Limits
 
+See the [threat model](Docs/ThreatModel.md) for what is and is not covered.
 All checks in this library run on the client.
 A compromised device or a hooked process can bypass them.
 This library is not a security boundary.
