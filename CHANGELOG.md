@@ -3,6 +3,57 @@
 Format follows Keep a Changelog. Versions follow Semantic Versioning.
 While the major version is 0, any release may contain breaking changes.
 
+## [0.4.0] - 2026-10-21
+
+### Added
+
+- `BiometricSessionCore`:
+  - `SessionController` (actor): `signIn`, `lock`, `signOut`, `unlock(reason:)`,
+    `recordActivity`, `evaluateTimeouts`, `appDidEnterBackground`,
+    `appWillEnterForeground`, `authorizeSensitiveAction(reason:)`, `states()`.
+  - Inactivity timeout, background grace, failed-attempt limit,
+    step-up with freshness window. All limits come from `SessionPolicy`.
+  - `states()`: `AsyncStream<SessionState>`, newest-only buffer.
+  - `MonotonicSessionClock`: ignores changes to the device date and time.
+  - `EnrollmentMonitor`, `DomainStateProviding`, `EnrollmentBaselineStoring`:
+    automatic enrollment check. A change signs the session out.
+  - New codes: `sessionNotUnlocked`, `enrollmentChanged`.
+- `BiometricSessionLocalAuth`: `LocalAuthDomainStateProvider`.
+- `BiometricSessionKeychain`: `KeychainBaselineStore`.
+- `BiometricSessionUIKit` product: `LifecycleAdapter`.
+- `BiometricSessionTestSupport`: `FakeDomainStateProvider`, `InMemoryBaselineStore`;
+  `FakeAuthenticator` can suspend a call for race tests.
+- CI: iOS Simulator test job for the UIKit adapter.
+
+### Not included yet
+
+- No cancelling of a prompt already on screen when the session locks.
+  The late result is ignored.
+- The stream does not finish when the controller is released.
+- `SessionState` carries no reason (for example "signed out because enrollment changed").
+- User activity is not detected automatically. Call `userDidInteract()` yourself.
+- Step-up failures do not count toward the attempt limit.
+- Concurrent step-up calls can each show a prompt.
+
+### Known limits
+
+- Inactivity is pull-based. Nothing locks by itself unless something calls
+  `evaluateTimeouts()`. `LifecycleAdapter` does this with a one-second tick.
+  The tick uses real time and is not unit tested.
+- UNKNOWN, needs a DEVICE:
+  whether `MonotonicSessionClock` counts time while the device sleeps;
+  whether the biometric prompt triggers `didEnterBackground`;
+  when the system domain state changes;
+  whether the baseline can be read while the device is locked;
+  what the system returns per failed attempt.
+  See `Docs/SimulatorVsDevice.md`.
+- A baseline read that fails is treated as a change. This can force a sign-in
+  without a real change.
+- Policy defaults are the author's starting points, not standards.
+- Counters and the baseline check live on the client. A hooked process can bypass all of it.
+  Enforce authorization on your server.
+- Runtime on iOS 14 is not tested. Compile only (CI).
+
 ## [0.3.0] - 2026-10-20
 ### Added
 

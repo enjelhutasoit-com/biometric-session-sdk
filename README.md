@@ -5,26 +5,20 @@ Zero third-party dependencies.
 
 ## Status
 
-`v0.3.0`: enrollment.
+`v0.4.0`: session.
 
 Included:
 
-- Domain types: capability, session state, typed errors.
-- `SessionPolicy` with a validating builder.
-- `SessionClock` and `BiometricAuthenticating` protocols.
-- `LocalAuthAuthenticator`: capability check and biometric prompt,
-  with optional passcode fallback (off by default).
-- `DomainState` and `EnrollmentChange`: compare enrollment fingerprints.
+- `SessionController`: lock, unlock, inactivity timeout, background grace,
+  failed-attempt limit, step-up re-authentication, state stream.
+- `LocalAuthAuthenticator` with optional passcode fallback (off by default).
+- Enrollment-change detection with a baseline in the Keychain.
 - `BiometricSecretStore`: Keychain secret readable only after biometry.
-- Test fakes: `ManualClock`, `FakeAuthenticator`.
-
-Not included yet:
-
-- A public way to read the current domain state.
-- Session controller, timeouts, attempt limit, step-up, state stream.
+- `MonotonicSessionClock`, `LifecycleAdapter` (UIKit).
+- Test fakes: `ManualClock`, `FakeAuthenticator`, and more.
 
 Version 0.x: the API may change in any release.
-Real device behavior is mostly unverified. See the
+Many device behaviors are UNKNOWN. See the
 [simulator vs device matrix](Docs/SimulatorVsDevice.md).
 
 ## Planned
@@ -43,7 +37,7 @@ Not in scope: UI screens, networking, jailbreak detection, Secure Enclave signin
 ## Install
 
 ```swift
-.package(url: "https://github.com/enjelhutasoit-com/biometric-session-sdk.git", from: "0.3.0")
+.package(url: "https://github.com/enjelhutasoit-com/biometric-session-sdk.git", from: "0.4.0")
 ```
 
 Add products to your targets:
@@ -52,13 +46,34 @@ Add products to your targets:
 .product(name: "BiometricSessionCore", package: "BiometricSession"),
 .product(name: "BiometricSessionLocalAuth", package: "BiometricSession"),
 .product(name: "BiometricSessionKeychain", package: "BiometricSession"),
+.product(name: "BiometricSessionUIKit", package: "BiometricSession"),
 // Test targets only:
 .product(name: "BiometricSessionTestSupport", package: "BiometricSession"),
 ```
 
 Do not link `BiometricSessionTestSupport` into an app target.
-Nothing prevents it technically. It contains fakes that can fake a successful login.
+It contains fakes that can fake a successful login.
 
+## Quick start
+
+```swift
+let controller = SessionController(
+    authenticator: LocalAuthAuthenticator(),
+    clock: MonotonicSessionClock(),
+    enrollment: EnrollmentMonitor(
+        provider: LocalAuthDomainStateProvider(),
+        store: KeychainBaselineStore(service: "app.baseline", account: "enrollment")!
+    )
+)
+let adapter = await LifecycleAdapter(controller: controller)
+await adapter.start()
+
+await controller.signIn()
+try await controller.unlock(reason: "Unlock your account")
+```
+
+Use a different Keychain service and account than `BiometricSecretStore`.
+Add `NSFaceIDUsageDescription` (see `Docs/InfoPlist.md`).
 
 ## Limits
 
