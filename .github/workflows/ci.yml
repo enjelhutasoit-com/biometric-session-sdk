@@ -34,6 +34,8 @@ jobs:
         run: swift --version 2>&1 | grep -q "Swift version 6.0"
       - name: Lint
         run: ./Scripts/lint.sh
+      - name: Concurrency escape hatches
+        run: ./Scripts/check-concurrency.sh
 
   test:
     runs-on: macos-15
