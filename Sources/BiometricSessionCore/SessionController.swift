@@ -19,28 +19,27 @@ public actor SessionController {
     private var current: SessionState = .signedOut {
         didSet {
             // One place covers every path that changes state.
-            if current != oldValue { publish(current) }
+            if current != oldValue { registry.publish(current) }
         }
     }
     private var lastActivity: SessionInstant?
     private var backgroundedAt: SessionInstant?
     private var failedAttempts = 0
     private var lastAuthentication: SessionInstant?
-    private var subscribers: [Int: AsyncStream<SessionState>.Continuation] = [:]
     private let monitor: EnrollmentMonitor?
+    private let registry = SubscriberRegistry()
     // One prompt shared by step-up calls of the same generation.
     private var inFlightStepUp: (token: Int, generation: Int, task: Task<Void, Error>)?
     private var nextStepUpToken = 0
 
     // Internal: tests wait until callers are really waiting.
     private(set) var stepUpWaiterCount = 0
-    private var nextSubscriberID = 0
     // Bumped on every change outside the unlock path. An unlock result
     // from an older generation is stale and must not change state.
     private var generation = 0
 
     // Internal: tests check that finished streams are removed.
-    var subscriberCount: Int { subscribers.count }
+    var subscriberCount: Int { registry.count }
 
     /// Creates a controller. It starts in `.signedOut`.
     ///
@@ -66,17 +65,14 @@ public actor SessionController {
     /// Equal states in a row are not repeated.
     /// Only the newest unread state is kept. A slow consumer can miss
     /// in-between states, but always gets the latest one.
+    /// The stream finishes when the controller is released.
     /// It is a UI aid, not an audit log and not a security control.
-    /// The stream does not finish by itself yet.
     ///
     /// Public: clients react to state changes without polling.
     public func states() -> AsyncStream<SessionState> {
-        let id = nextSubscriberID
-        nextSubscriberID += 1
-        return AsyncStream(SessionState.self, bufferingPolicy: .bufferingNewest(1)) {
-            continuation in
+        AsyncStream(SessionState.self, bufferingPolicy: .bufferingNewest(1)) { continuation in
             continuation.yield(current)
-            subscribers[id] = continuation
+            let id = registry.add(continuation)
             continuation.onTermination = { [weak self] _ in
                 Task { await self?.removeSubscriber(id) }
             }
@@ -291,14 +287,8 @@ public actor SessionController {
         return elapsed >= 0 && elapsed < policy.stepUpFreshness
     }
 
-    private func publish(_ state: SessionState) {
-        for continuation in subscribers.values {
-            continuation.yield(state)
-        }
-    }
-
     private func removeSubscriber(_ id: Int) {
-        subscribers[id] = nil
+        registry.remove(id)
     }
 
     // true when the enrollment changed or cannot be proven unchanged.

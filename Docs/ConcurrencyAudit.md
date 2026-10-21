@@ -40,7 +40,17 @@ Their `reason` is ignored after the first. Cancelling the caller does not close 
   Verify by: Simulator test. Serialize through one stream if order is not guaranteed.
 - UNKNOWN: `throws(BiometricSessionError)` at iOS 14.
   Verify by: build one function with `.iOS(.v14)`. Not adopted yet.
-- The state stream does not finish when the controller is released.
 - A prompt already on screen is not closed on lock or sign out. Its result is ignored.
 - `LifecycleAdapter` tick uses real time and is not unit tested.
 - Runtime on iOS 14 is not tested. Compile only.
+- `unlock` and `authorizeSensitiveAction` hold the controller while they await the
+  authenticator. An authenticator that never returns keeps the controller alive.
+  That is how `await` works. Use an authenticator that always returns.
+  
+  ## Release
+
+- Streams finish when the controller is released (`SubscriberRegistry.deinit`).
+- A dropped `LifecycleAdapter` removes its observers and stops its tick
+  (`Registration.deinit`), even without `stop()`.
+- Covered by weak-reference tests in `ReleaseTests` and `LifecycleAdapterReleaseTests`.
+  They prove the paths they test. They do not prove the library is free of leaks.
