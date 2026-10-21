@@ -94,3 +94,20 @@ jobs:
           xcodebuild build \
             -scheme BiometricSessionKeychain \
             -destination 'generic/platform=iOS Simulator'
+
+  ios-test:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: |
+          test -d "$XCODE_APP" || { echo "Missing $XCODE_APP"; exit 1; }
+          sudo xcode-select -s "$XCODE_APP"
+      - name: List simulators
+        run: xcrun simctl list devices available
+      - name: Test UIKit adapter on iOS Simulator
+        run: |
+          xcodebuild test \
+            -scheme BiometricSessionUIKit \
+            -destination 'platform=iOS Simulator,name=iPhone 16'

@@ -26,6 +26,10 @@ let package = Package(
             name: "BiometricSessionKeychain",
             targets: ["BiometricSessionKeychain"]
         ),
+        .library(
+            name: "BiometricSessionUIKit",
+            targets: ["BiometricSessionUIKit"]
+        ),
     ],
     targets: [
         .target(
@@ -43,6 +47,10 @@ let package = Package(
             name: "BiometricSessionKeychain",
             dependencies: ["BiometricSessionCore"]
         ),
+        .target(
+            name: "BiometricSessionUIKit",
+            dependencies: ["BiometricSessionCore"]
+        ),
         .testTarget(
             name: "BiometricSessionCoreTests",
             dependencies: ["BiometricSessionCore", "BiometricSessionTestSupport"]
@@ -58,6 +66,14 @@ let package = Package(
         .testTarget(
             name: "BiometricSessionKeychainTests",
             dependencies: ["BiometricSessionCore", "BiometricSessionKeychain"]
+        ),
+        .testTarget(
+            name: "BiometricSessionUIKitTests",
+            dependencies: [
+                "BiometricSessionCore",
+                "BiometricSessionTestSupport",
+                "BiometricSessionUIKit",
+            ]
         ),
     ],
     swiftLanguageModes: [.v6]
