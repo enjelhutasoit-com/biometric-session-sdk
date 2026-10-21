@@ -36,6 +36,8 @@ jobs:
         run: ./Scripts/lint.sh
       - name: Concurrency escape hatches
         run: ./Scripts/check-concurrency.sh
+      - name: Documentation catalog check
+        run: ./Scripts/check-docs.sh
 
   test:
     runs-on: macos-15
@@ -113,3 +115,15 @@ jobs:
           xcodebuild test \
             -scheme BiometricSessionUIKit \
             -destination 'platform=iOS Simulator,name=iPhone 16'
+
+  docs:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: |
+          test -d "$XCODE_APP" || { echo "Missing $XCODE_APP"; exit 1; }
+          sudo xcode-select -s "$XCODE_APP"
+      - name: Build documentation
+        run: ./Scripts/docbuild.sh

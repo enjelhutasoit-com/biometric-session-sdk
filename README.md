@@ -92,6 +92,17 @@ Setup details: [Info.plist guide](Docs/InfoPlist.md).
 Tested behavior per environment: [simulator vs device matrix](Docs/SimulatorVsDevice.md).
 Many cells are still UNKNOWN. Read them before relying on a behavior.
 
+## Documentation
+
+DocC catalogs live next to each module. Build them with Xcode:
+
+```bash
+./Scripts/docbuild.sh
+```
+
+The script prints the `.doccarchive` paths. Open one in Xcode.
+Warnings fail the build.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).

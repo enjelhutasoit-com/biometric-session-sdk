@@ -8,9 +8,11 @@
 4. Write the minimum production code to make it pass.
 5. Run `./Scripts/lint.sh`.
 6. Run `./Scripts/check-concurrency.sh`. A new `@unchecked Sendable` or similar needs a written reason in `Docs/ConcurrencyAudit.md` and an allowlist entry.
-7. Run `swift test`.
-8. Commit with Conventional Commits.
-9. Open a pull request using the template.
+7. Run `./Scripts/check-docs.sh`. Doc comments (`///`) must not mention internal commit numbers. A new module needs its own DocC landing page.
+8. Run `./Scripts/docbuild.sh` when you change public documentation.
+9. Run `swift test`.
+10. Commit with Conventional Commits.
+11. Open a pull request using the template.
 
 ## Formatting
 
