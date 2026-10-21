@@ -42,6 +42,8 @@ public struct BiometricSessionError: Error, Sendable, Hashable {
         case keychainFailure
         /// The action needs an unlocked session, but the session is not unlocked.
         case sessionNotUnlocked
+        /// The biometric enrollment changed, or could not be proven unchanged.
+        case enrollmentChanged
         /// A failure this library does not recognize yet.
         case unknown
     }
@@ -116,6 +118,8 @@ extension BiometricSessionError.Code {
             return "A Keychain operation failed."
         case .sessionNotUnlocked:
             return "The session is not unlocked."
+        case .enrollmentChanged:
+            return "The biometric enrollment changed since sign in."
         case .unknown:
             return "An unrecognized failure occurred."
         }
@@ -151,6 +155,8 @@ extension BiometricSessionError.Code {
             return "Log the status number and offer another sign-in method."
         case .sessionNotUnlocked:
             return "Unlock the session first, then repeat the action."
+        case .enrollmentChanged:
+            return "The user signs in again with the app's own sign-in."
         case .unknown:
             return "Log the error and offer another sign-in method."
         }
