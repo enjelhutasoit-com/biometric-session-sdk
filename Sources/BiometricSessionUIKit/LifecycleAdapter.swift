@@ -16,6 +16,9 @@
     /// global gesture recognizer. Call `userDidInteract()` from a place you choose.
     /// See `Docs/UIKitLifecycle.md`.
     ///
+    /// Dropping the adapter removes its observers and stops the tick,
+    /// even without `stop()`.
+    ///
     /// Limits: the tick uses real time and is not covered by unit tests.
     /// Notifications can be missed. A hooked process can skip all of this.
     @MainActor
@@ -23,8 +26,7 @@
         private let bridge: LifecycleBridge
         private let center: NotificationCenter
         private let tickInterval: TimeInterval
-        private var observers: [NSObjectProtocol] = []
-        private var tickTask: Task<Void, Never>?
+        private var registration: Registration?
 
         /// Creates an adapter. Call `start()` to begin.
         ///
@@ -41,41 +43,38 @@
 
         /// Starts observing and ticking. Calling it twice does nothing.
         public func start() {
-            guard observers.isEmpty else { return }
+            guard registration == nil else { return }
             let bridge = self.bridge
-            observers.append(
+            let observers = [
                 center.addObserver(
                     forName: UIApplication.didEnterBackgroundNotification,
                     object: nil,
                     queue: .main
                 ) { _ in
                     Task { await bridge.didEnterBackground() }
-                }
-            )
-            observers.append(
+                },
                 center.addObserver(
                     forName: UIApplication.willEnterForegroundNotification,
                     object: nil,
                     queue: .main
                 ) { _ in
                     Task { await bridge.willEnterForeground() }
-                }
-            )
+                },
+            ]
             let nanoseconds = UInt64(tickInterval * 1_000_000_000)
-            tickTask = Task {
+            let tickTask = Task {
                 while !Task.isCancelled {
                     await bridge.tick()
                     try? await Task.sleep(nanoseconds: nanoseconds)
                 }
             }
+            registration = Registration(center: center, observers: observers, tickTask: tickTask)
         }
 
         /// Stops observing and ticking.
         public func stop() {
-            for observer in observers { center.removeObserver(observer) }
-            observers.removeAll()
-            tickTask?.cancel()
-            tickTask = nil
+            registration?.end()
+            registration = nil
         }
 
         /// Tell the session the user did something.
@@ -83,10 +82,30 @@
             let bridge = self.bridge
             Task { await bridge.userDidInteract() }
         }
+    }
+
+    /// Owns the observers and the tick. Its `deinit` cleans up,
+    /// so a dropped adapter cannot leave them behind.
+    private final class Registration {
+        private let center: NotificationCenter
+        private var observers: [NSObjectProtocol]
+        private let tickTask: Task<Void, Never>
+
+        init(center: NotificationCenter, observers: [NSObjectProtocol], tickTask: Task<Void, Never>)
+        {
+            self.center = center
+            self.observers = observers
+            self.tickTask = tickTask
+        }
+
+        func end() {
+            for observer in observers { center.removeObserver(observer) }
+            observers.removeAll()
+            tickTask.cancel()
+        }
 
         deinit {
-            // UNKNOWN: Swift 6 allows touching these from a nonisolated deinit. Verify by: build.
-            tickTask?.cancel()
+            end()
         }
     }
 #endif
