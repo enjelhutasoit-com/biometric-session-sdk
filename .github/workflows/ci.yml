@@ -46,6 +46,8 @@ jobs:
         run: ./Scripts/check-public-api.sh
       - name: Error guide check
         run: ./Scripts/check-errors-doc.sh
+      - name: Release gate
+        run: ./Scripts/check-release.sh
 
   test:
     runs-on: macos-15

@@ -9,44 +9,54 @@ Zero third-party dependencies.
 
 ## Status
 
-`v0.4.0`: session.
+`v1.0.0`. The public API follows Semantic Versioning from this release.
+See [Docs/PublicAPI.md](Docs/PublicAPI.md) for the policy.
 
-Included:
+1.0.0 is API stability, not a security claim and not an audit.
+Many device behaviors are still UNKNOWN. See the
+[simulator vs device matrix](Docs/SimulatorVsDevice.md)
+and the [threat model](Docs/ThreatModel.md) before you adopt it.
+
+## What it does
 
 - `SessionController`: lock, unlock, inactivity timeout, background grace,
   failed-attempt limit, step-up re-authentication, state stream.
-- `LocalAuthAuthenticator` with optional passcode fallback (off by default).
+- `LocalAuthAuthenticator`: capability check and biometric prompt,
+  with optional passcode fallback (off by default).
 - Enrollment-change detection with a baseline in the Keychain.
 - `BiometricSecretStore`: Keychain secret readable only after biometry.
-- `MonotonicSessionClock`, `LifecycleAdapter` (UIKit).
-- Test fakes: `ManualClock`, `FakeAuthenticator`, and more.
-
-Version 0.x: the API may change in any release.
-Many device behaviors are UNKNOWN. See the
-[simulator vs device matrix](Docs/SimulatorVsDevice.md).
-
-## Planned
-
-- Biometric capability check (available, not enrolled, lockout, no passcode)
-- Authentication with typed errors and passcode fallback
-- Enrollment-change detection and forced re-login
-- Keychain secret gated by biometry access control
-- Session state machine: locked, unlocking, unlocked, signed out
-- Inactivity timeout, background grace period, failed-attempt limit
-- Step-up re-authentication with a freshness window
-- State stream via `AsyncStream`
+- `MonotonicSessionClock`: ignores changes to the device date and time.
+- `LifecycleAdapter` (UIKit): forwards lifecycle events and a tick to the controller.
+- Typed errors with `code`, `reason`, `expected` and `docURL`.
+- Test fakes: `ManualClock`, `FakeAuthenticator`, `FakeDomainStateProvider`,
+  `InMemoryBaselineStore`.
 
 Not in scope: UI screens, networking, jailbreak detection, Secure Enclave signing.
 
-## Demo
+## Limits
 
-`Examples/BiometricSessionDemo` is a small SwiftUI app that wires everything.
-It is not part of the package products. See its README for limits.
+All checks in this library run on the client.
+A compromised device or a hooked process can bypass them.
+This library is not a security boundary.
+Enforce authorization on your server.
+Timeouts and attempt limits are configurable policy defaults, not standards.
+
+See the [threat model](Docs/ThreatModel.md) for what is and is not covered.
+
+## Requirements
+
+- Swift 6.0 toolchain (Xcode 16)
+- iOS 14 deployment target (see `Package.swift`)
+- Runtime on iOS 14 is not tested. Compile only (CI).
+
+Setup details: [Info.plist guide](Docs/InfoPlist.md).
+Tested behavior per environment: [simulator vs device matrix](Docs/SimulatorVsDevice.md).
+Many cells are still UNKNOWN. Read them before relying on a behavior.
 
 ## Install
 
 ```swift
-.package(url: "https://github.com/enjelhutasoit-com/biometric-session-sdk.git", from: "0.4.0")
+.package(url: "https://github.com/enjelhutasoit-com/biometric-session-sdk.git", from: "1.0.0")
 ```
 
 Add products to your targets:
@@ -61,7 +71,7 @@ Add products to your targets:
 ```
 
 Do not link `BiometricSessionTestSupport` into an app target.
-It contains fakes that can fake a successful login.
+Nothing prevents it technically. It contains fakes that can fake a successful login.
 
 ## Quick start
 
@@ -81,26 +91,25 @@ await controller.signIn()
 try await controller.unlock(reason: "Unlock your account")
 ```
 
-Use a different Keychain service and account than `BiometricSecretStore`.
-Add `NSFaceIDUsageDescription` (see `Docs/InfoPlist.md`).
+Notes:
 
-## Limits
+- Add `NSFaceIDUsageDescription` to your Info.plist (see [Docs/InfoPlist.md](Docs/InfoPlist.md)).
+- Use a different Keychain service and account than `BiometricSecretStore`.
+  The same pair overwrites the other item.
+- Nothing locks the session by itself. Something must call `evaluateTimeouts()`
+  regularly. `LifecycleAdapter` does this on UIKit.
+- Call `adapter.userDidInteract()` where it fits your app. Touches are not detected automatically.
+- Do not call `BiometricSecretStore.load()` from the main thread.
+- When you switch on `BiometricSessionError.Code` or `SessionState`,
+  add `@unknown default`. New cases may arrive in a minor release.
 
-See the [threat model](Docs/ThreatModel.md) for what is and is not covered.
-All checks in this library run on the client.
-A compromised device or a hooked process can bypass them.
-This library is not a security boundary.
-Enforce authorization on your server.
-Timeouts and attempt limits are configurable policy defaults, not standards.
+Before a sensitive action:
 
-## Requirements
+```swift
+try await controller.authorizeSensitiveAction(reason: "Confirm transfer")
+```
 
-- Swift 6.0 toolchain (Xcode 16)
-- iOS 14 deployment target (see `Package.swift`)
-
-Setup details: [Info.plist guide](Docs/InfoPlist.md).
-Tested behavior per environment: [simulator vs device matrix](Docs/SimulatorVsDevice.md).
-Many cells are still UNKNOWN. Read them before relying on a behavior.
+This is a client-side check. Your server must verify on its own.
 
 ## Documentation
 
@@ -110,10 +119,19 @@ DocC catalogs live next to each module. Build them with Xcode:
 ./Scripts/docbuild.sh
 ```
 
-The script prints the `.doccarchive` paths. Open one in Xcode.
-Warnings fail the build.
+The script prints the `.doccarchive` paths. Open one in Xcode. Warnings fail the build.
 
-The public surface is listed in [Docs/PublicAPI.md](Docs/PublicAPI.md).
+- [Public API](Docs/PublicAPI.md)
+- [Error codes](Docs/Errors.md)
+- [Threat model](Docs/ThreatModel.md)
+- [Concurrency audit](Docs/ConcurrencyAudit.md)
+- [Performance tests](Docs/Performance.md)
+- [UIKit lifecycle](Docs/UIKitLifecycle.md)
+
+## Demo
+
+`Examples/BiometricSessionDemo` is a small SwiftUI app that wires everything.
+It is not part of the package products. See its README for limits.
 
 ## Contributing
 
