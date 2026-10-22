@@ -10,9 +10,10 @@
 6. Run `./Scripts/check-concurrency.sh`. A new `@unchecked Sendable` or similar needs a written reason in `Docs/ConcurrencyAudit.md` and an allowlist entry.
 7. Run `./Scripts/check-docs.sh`. Doc comments (`///`) must not mention internal commit numbers. A new module needs its own DocC landing page.
 8. Run `./Scripts/docbuild.sh` when you change public documentation.
-9. Run `swift test`.
-10. Commit with Conventional Commits.
-11. Open a pull request using the template.
+9. Run `./Scripts/check-public-api.sh`. If you changed a public declaration on purpose, run it with `--update`, read the diff, and describe the type in `Docs/PublicAPI.md`. Removing or changing a public declaration needs a major version.
+10. Run `swift test`.
+11. Commit with Conventional Commits.
+12. Open a pull request using the template.
 
 ## Formatting
 

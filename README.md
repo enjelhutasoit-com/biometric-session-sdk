@@ -109,6 +109,8 @@ DocC catalogs live next to each module. Build them with Xcode:
 The script prints the `.doccarchive` paths. Open one in Xcode.
 Warnings fail the build.
 
+The public surface is listed in [Docs/PublicAPI.md](Docs/PublicAPI.md).
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).

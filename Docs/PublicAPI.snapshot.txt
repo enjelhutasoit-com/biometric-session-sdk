@@ -1,0 +1,120 @@
+Sources/BiometricSessionCore/BiometricAuthenticating.swift: public protocol BiometricAuthenticating: Sendable
+Sources/BiometricSessionCore/BiometricCapability.swift: public enum BiometricCapability: Sendable, Hashable
+Sources/BiometricSessionCore/BiometricCapability.swift: public var biometryKind: BiometryKind?
+Sources/BiometricSessionCore/BiometricCapability.swift: public var isAvailable: Bool
+Sources/BiometricSessionCore/BiometricSessionError.swift: public enum Code: Sendable, Hashable, CaseIterable
+Sources/BiometricSessionCore/BiometricSessionError.swift: public init(code: Code, reason: String? = nil, expected: String? = nil)
+Sources/BiometricSessionCore/BiometricSessionError.swift: public let code: Code
+Sources/BiometricSessionCore/BiometricSessionError.swift: public let expected: String
+Sources/BiometricSessionCore/BiometricSessionError.swift: public let reason: String
+Sources/BiometricSessionCore/BiometricSessionError.swift: public struct BiometricSessionError: Error, Sendable, Hashable
+Sources/BiometricSessionCore/BiometricSessionError.swift: public var description: String
+Sources/BiometricSessionCore/BiometricSessionError.swift: public var docURL: URL { code.docURL }
+Sources/BiometricSessionCore/BiometryKind.swift: public enum BiometryKind: Sendable, Hashable, CaseIterable
+Sources/BiometricSessionCore/DomainState.swift: public init?(data: Data)
+Sources/BiometricSessionCore/DomainState.swift: public let data: Data
+Sources/BiometricSessionCore/DomainState.swift: public struct DomainState: Sendable, Hashable
+Sources/BiometricSessionCore/DomainState.swift: public var debugDescription: String { "DomainState(redacted)" }
+Sources/BiometricSessionCore/DomainState.swift: public var description: String { "DomainState(redacted)" }
+Sources/BiometricSessionCore/DomainStateProviding.swift: public protocol DomainStateProviding: Sendable
+Sources/BiometricSessionCore/EnrollmentBaselineStoring.swift: public protocol EnrollmentBaselineStoring: Sendable
+Sources/BiometricSessionCore/EnrollmentChange.swift: public enum EnrollmentChange: Sendable, Hashable, CaseIterable
+Sources/BiometricSessionCore/EnrollmentChange.swift: public static func evaluate(
+Sources/BiometricSessionCore/EnrollmentMonitor.swift: public init(
+Sources/BiometricSessionCore/EnrollmentMonitor.swift: public struct EnrollmentMonitor: Sendable
+Sources/BiometricSessionCore/MonotonicSessionClock.swift: public func now() -> SessionInstant
+Sources/BiometricSessionCore/MonotonicSessionClock.swift: public init()
+Sources/BiometricSessionCore/MonotonicSessionClock.swift: public struct MonotonicSessionClock: SessionClock
+Sources/BiometricSessionCore/SessionClock.swift: public protocol SessionClock: Sendable
+Sources/BiometricSessionCore/SessionController.swift: public actor SessionController
+Sources/BiometricSessionCore/SessionController.swift: public func appDidEnterBackground()
+Sources/BiometricSessionCore/SessionController.swift: public func appWillEnterForeground() async
+Sources/BiometricSessionCore/SessionController.swift: public func authorizeSensitiveAction(reason: String) async throws
+Sources/BiometricSessionCore/SessionController.swift: public func evaluateTimeouts()
+Sources/BiometricSessionCore/SessionController.swift: public func lock()
+Sources/BiometricSessionCore/SessionController.swift: public func recordActivity()
+Sources/BiometricSessionCore/SessionController.swift: public func signIn() async
+Sources/BiometricSessionCore/SessionController.swift: public func signOut()
+Sources/BiometricSessionCore/SessionController.swift: public func states() -> AsyncStream<SessionState>
+Sources/BiometricSessionCore/SessionController.swift: public func unlock(reason: String) async throws
+Sources/BiometricSessionCore/SessionController.swift: public init(
+Sources/BiometricSessionCore/SessionController.swift: public var state: SessionState { current }
+Sources/BiometricSessionCore/SessionInstant.swift: public func advanced(by seconds: TimeInterval) -> SessionInstant
+Sources/BiometricSessionCore/SessionInstant.swift: public func duration(since other: SessionInstant) -> TimeInterval
+Sources/BiometricSessionCore/SessionInstant.swift: public init(secondsSinceOrigin: TimeInterval)
+Sources/BiometricSessionCore/SessionInstant.swift: public let secondsSinceOrigin: TimeInterval
+Sources/BiometricSessionCore/SessionInstant.swift: public static func < (lhs: SessionInstant, rhs: SessionInstant) -> Bool
+Sources/BiometricSessionCore/SessionInstant.swift: public struct SessionInstant: Sendable, Hashable, Comparable
+Sources/BiometricSessionCore/SessionPolicy.swift: public func build() throws -> SessionPolicy
+Sources/BiometricSessionCore/SessionPolicy.swift: public init() {}
+Sources/BiometricSessionCore/SessionPolicy.swift: public let backgroundGrace: TimeInterval
+Sources/BiometricSessionCore/SessionPolicy.swift: public let inactivityTimeout: TimeInterval
+Sources/BiometricSessionCore/SessionPolicy.swift: public let maxFailedAttempts: Int
+Sources/BiometricSessionCore/SessionPolicy.swift: public let stepUpFreshness: TimeInterval
+Sources/BiometricSessionCore/SessionPolicy.swift: public static let `default` = SessionPolicy(
+Sources/BiometricSessionCore/SessionPolicy.swift: public struct Builder: Sendable, Hashable
+Sources/BiometricSessionCore/SessionPolicy.swift: public struct SessionPolicy: Sendable, Hashable
+Sources/BiometricSessionCore/SessionPolicy.swift: public var backgroundGrace: TimeInterval = SessionPolicy.default.backgroundGrace
+Sources/BiometricSessionCore/SessionPolicy.swift: public var inactivityTimeout: TimeInterval = SessionPolicy.default.inactivityTimeout
+Sources/BiometricSessionCore/SessionPolicy.swift: public var maxFailedAttempts: Int = SessionPolicy.default.maxFailedAttempts
+Sources/BiometricSessionCore/SessionPolicy.swift: public var stepUpFreshness: TimeInterval = SessionPolicy.default.stepUpFreshness
+Sources/BiometricSessionCore/SessionState.swift: public enum SessionState: Sendable, Hashable, CaseIterable
+Sources/BiometricSessionCore/SessionState.swift: public var isUnlocked: Bool
+Sources/BiometricSessionKeychain/BiometricSecretStore.swift: public func delete() throws
+Sources/BiometricSessionKeychain/BiometricSecretStore.swift: public func load() throws -> Data
+Sources/BiometricSessionKeychain/BiometricSecretStore.swift: public func save(_ secret: Data) throws
+Sources/BiometricSessionKeychain/BiometricSecretStore.swift: public init?(service: String, account: String)
+Sources/BiometricSessionKeychain/BiometricSecretStore.swift: public struct BiometricSecretStore: Sendable
+Sources/BiometricSessionKeychain/KeychainBaselineStore.swift: public func clear() async throws
+Sources/BiometricSessionKeychain/KeychainBaselineStore.swift: public func load() async -> DomainState?
+Sources/BiometricSessionKeychain/KeychainBaselineStore.swift: public func save(_ state: DomainState) async throws
+Sources/BiometricSessionKeychain/KeychainBaselineStore.swift: public init?(service: String, account: String)
+Sources/BiometricSessionKeychain/KeychainBaselineStore.swift: public struct KeychainBaselineStore: EnrollmentBaselineStoring
+Sources/BiometricSessionLocalAuth/LocalAuthAuthenticator.swift: public func authenticate(reason: String) async throws
+Sources/BiometricSessionLocalAuth/LocalAuthAuthenticator.swift: public func capability() async -> BiometricCapability
+Sources/BiometricSessionLocalAuth/LocalAuthAuthenticator.swift: public init(passcodeFallback: PasscodeFallback = .disabled)
+Sources/BiometricSessionLocalAuth/LocalAuthAuthenticator.swift: public struct LocalAuthAuthenticator: BiometricAuthenticating
+Sources/BiometricSessionLocalAuth/LocalAuthDomainStateProvider.swift: public func currentDomainState() async -> DomainState?
+Sources/BiometricSessionLocalAuth/LocalAuthDomainStateProvider.swift: public init()
+Sources/BiometricSessionLocalAuth/LocalAuthDomainStateProvider.swift: public struct LocalAuthDomainStateProvider: DomainStateProviding
+Sources/BiometricSessionLocalAuth/PasscodeFallback.swift: public enum PasscodeFallback: Sendable, Hashable
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public actor FakeAuthenticator: BiometricAuthenticating
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public enum Outcome: Sendable
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public enum Resolution: Sendable
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public func authenticate(reason: String) async throws
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public func capability() async -> BiometricCapability
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public func enqueue(_ outcome: Outcome)
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public func resume(with resolution: Resolution)
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public func resumeCall(_ call: Int, with resolution: Resolution)
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public func setCapability(_ capability: BiometricCapability)
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public func waitUntilSuspended(callCount: Int = 1) async
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public init(capability: BiometricCapability = .unavailable)
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public private(set) var authenticateCallCount = 0
+Sources/BiometricSessionTestSupport/FakeAuthenticator.swift: public private(set) var reasons: [String] = []
+Sources/BiometricSessionTestSupport/FakeDomainStateProvider.swift: public actor FakeDomainStateProvider: DomainStateProviding
+Sources/BiometricSessionTestSupport/FakeDomainStateProvider.swift: public func currentDomainState() async -> DomainState?
+Sources/BiometricSessionTestSupport/FakeDomainStateProvider.swift: public func resume()
+Sources/BiometricSessionTestSupport/FakeDomainStateProvider.swift: public func set(_ value: DomainState?)
+Sources/BiometricSessionTestSupport/FakeDomainStateProvider.swift: public func suspendNextRead()
+Sources/BiometricSessionTestSupport/FakeDomainStateProvider.swift: public func waitUntilSuspended() async
+Sources/BiometricSessionTestSupport/FakeDomainStateProvider.swift: public init(_ value: DomainState? = nil)
+Sources/BiometricSessionTestSupport/FakeDomainStateProvider.swift: public private(set) var readCount = 0
+Sources/BiometricSessionTestSupport/InMemoryBaselineStore.swift: public actor InMemoryBaselineStore: EnrollmentBaselineStoring
+Sources/BiometricSessionTestSupport/InMemoryBaselineStore.swift: public func clear() async throws
+Sources/BiometricSessionTestSupport/InMemoryBaselineStore.swift: public func failWrites(with error: BiometricSessionError?)
+Sources/BiometricSessionTestSupport/InMemoryBaselineStore.swift: public func load() async -> DomainState? { stored }
+Sources/BiometricSessionTestSupport/InMemoryBaselineStore.swift: public func save(_ state: DomainState) async throws
+Sources/BiometricSessionTestSupport/InMemoryBaselineStore.swift: public init(_ initial: DomainState? = nil)
+Sources/BiometricSessionTestSupport/InMemoryBaselineStore.swift: public private(set) var clearCount = 0
+Sources/BiometricSessionTestSupport/InMemoryBaselineStore.swift: public private(set) var saveCount = 0
+Sources/BiometricSessionTestSupport/InMemoryBaselineStore.swift: public private(set) var stored: DomainState?
+Sources/BiometricSessionTestSupport/ManualClock.swift: public final class ManualClock: SessionClock, @unchecked Sendable
+Sources/BiometricSessionTestSupport/ManualClock.swift: public func advance(by seconds: TimeInterval)
+Sources/BiometricSessionTestSupport/ManualClock.swift: public func now() -> SessionInstant
+Sources/BiometricSessionTestSupport/ManualClock.swift: public func set(to instant: SessionInstant)
+Sources/BiometricSessionTestSupport/ManualClock.swift: public init(startingAt start: SessionInstant = SessionInstant(secondsSinceOrigin: 0))
+Sources/BiometricSessionUIKit/LifecycleAdapter.swift: public final class LifecycleAdapter
+Sources/BiometricSessionUIKit/LifecycleAdapter.swift: public func start()
+Sources/BiometricSessionUIKit/LifecycleAdapter.swift: public func stop()
+Sources/BiometricSessionUIKit/LifecycleAdapter.swift: public func userDidInteract()
+Sources/BiometricSessionUIKit/LifecycleAdapter.swift: public init(
