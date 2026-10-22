@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="biometric-session-logo" alt="Biometric Session logo" height="130">
+</p>
+
 # BiometricSession
 
 Biometric authentication and session lifecycle kit for Swift apps.
