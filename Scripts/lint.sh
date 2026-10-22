@@ -8,4 +8,5 @@ swift format lint \
     --strict \
     --recursive \
     --parallel \
-    Package.swift Sources Tests
+    Package.swift Sources Tests Examples
+

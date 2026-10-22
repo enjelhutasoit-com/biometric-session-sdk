@@ -34,6 +34,11 @@ Many device behaviors are UNKNOWN. See the
 
 Not in scope: UI screens, networking, jailbreak detection, Secure Enclave signing.
 
+## Demo
+
+`Examples/BiometricSessionDemo` is a small SwiftUI app that wires everything.
+It is not part of the package products. See its README for limits.
+
 ## Install
 
 ```swift
