@@ -2,6 +2,61 @@
 
 Format follows Keep a Changelog. Versions follow Semantic Versioning.
 While the major version is 0, any release may contain breaking changes.
+From 1.0.0 on, removing or changing a public declaration needs a major version.
+Adding an enum case is a minor change and is listed here.
+Write `@unknown default` in your switches.
+
+## [1.0.0] - 2026-10-22
+
+See `Docs/PublicAPI.md` for the API policy.
+
+### Changed
+
+- `BiometricSessionError.docURL` links to the heading for each code in `Docs/Errors.md`
+  instead of one Apple page.
+- Step-up calls made while a prompt is on screen share that prompt and its result.
+- `states()` finishes when the controller is released.
+- A dropped `LifecycleAdapter` removes its observers and stops its tick, even without `stop()`.
+
+### Added
+
+- `Docs/ThreatModel.md`, `Docs/PublicAPI.md`, `Docs/Errors.md`, `Docs/ConcurrencyAudit.md`,
+  `Docs/Performance.md`.
+- DocC catalog for every module (`./Scripts/docbuild.sh`).
+- Demo app in `Examples/BiometricSessionDemo` (not a package product).
+- Performance tests (manual, not part of CI).
+- Release and deinit tests, concurrent step-up tests.
+- CI gates: concurrency escape hatches, DocC, threat model, public surface, error guide,
+  demo build, release gate.
+
+### Not included
+
+- No cancelling of a prompt that is already on screen when the session locks.
+  The late result is ignored.
+- `SessionState` carries no reason for a sign out.
+- Typed throws. Availability at iOS 14 is UNKNOWN.
+- User activity is not detected automatically. Call `userDidInteract()` yourself.
+- Step-up failures do not count toward the attempt limit.
+- Static hosting for the documentation.
+
+### Known limits
+
+- This is the author's own API and threat review. It is not a third-party audit.
+- Everything runs on the client. A jailbroken device or a hooked process can bypass it.
+  The library is not a security boundary. Enforce authorization on your server.
+- Many behaviors need a physical device. Cells in `Docs/SimulatorVsDevice.md`
+  that were not run stay UNKNOWN. Read it before relying on a behavior, including:
+  time while the device sleeps, baseline reads while the device is locked,
+  when the system domain state changes, background notifications during a prompt.
+- Runtime on iOS 14 is not tested. Compile only (CI).
+- Inactivity is pull-based. Nothing locks unless something calls `evaluateTimeouts()`.
+  `LifecycleAdapter` does it with a real-time tick that is not unit tested.
+- Policy defaults are the author's starting points, not standards.
+- A failed baseline read signs the user out. This can happen without a real change.
+- `BiometricSecretStore.save` deletes the old item first. If the add fails, the old secret is gone.
+- A backwards clock locks the session before the step-up freshness rule is checked.
+- Performance numbers depend on the machine. No target is promised.
+
 
 ## [0.4.0] - 2026-10-21
 
@@ -55,6 +110,7 @@ While the major version is 0, any release may contain breaking changes.
 - Runtime on iOS 14 is not tested. Compile only (CI).
 
 ## [0.3.0] - 2026-10-20
+
 ### Added
 
 - `BiometricSessionCore`:

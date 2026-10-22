@@ -46,6 +46,8 @@ jobs:
         run: ./Scripts/check-public-api.sh
       - name: Error guide check
         run: ./Scripts/check-errors-doc.sh
+      - name: Release gate
+        run: ./Scripts/check-release.sh
 
   test:
     runs-on: macos-15
@@ -116,13 +118,16 @@ jobs:
         run: |
           test -d "$XCODE_APP" || { echo "Missing $XCODE_APP"; exit 1; }
           sudo xcode-select -s "$XCODE_APP"
-      - name: List simulators
-        run: xcrun simctl list devices available
+      - name: List schemes and simulators
+        run: |
+          xcodebuild -list
+          xcrun simctl list devices available
       - name: Test UIKit adapter on iOS Simulator
         run: |
           xcodebuild test \
             -scheme BiometricSessionUIKit \
-            -destination 'platform=iOS Simulator,name=iPhone 16'
+            -destination 'generic/platform=iOS Simulator'
+            -only-testing:BiometricSessionUIKitTests
 
   docs:
     runs-on: macos-15
