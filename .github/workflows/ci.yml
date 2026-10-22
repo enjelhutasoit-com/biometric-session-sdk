@@ -44,6 +44,8 @@ jobs:
         run: ./Scripts/check-examples.sh
       - name: Public API check
         run: ./Scripts/check-public-api.sh
+      - name: Error guide check
+        run: ./Scripts/check-errors-doc.sh
 
   test:
     runs-on: macos-15

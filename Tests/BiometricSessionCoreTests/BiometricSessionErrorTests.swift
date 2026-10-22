@@ -111,4 +111,41 @@ struct BiometricSessionErrorTests {
         // Forces review of every switch and of the public API.
         #expect(BiometricSessionError.Code.allCases.count == 16)
     }
+
+    // MARK: Documentation links
+
+    @Test("Every code has its own doc URL")
+    func docURLsAreUnique() {
+        let urls = BiometricSessionError.Code.allCases.map {
+            BiometricSessionError(code: $0).docURL
+        }
+        #expect(Set(urls).count == urls.count)
+    }
+
+    @Test(
+        "The URL fragment is the lowercase code name",
+        arguments: BiometricSessionError.Code.allCases
+    )
+    func docURLFragment(code: BiometricSessionError.Code) {
+        let expected = String(describing: code).lowercased()
+        #expect(BiometricSessionError(code: code).docURL.fragment == expected)
+    }
+
+    @Test(
+        "The URL has no placeholder left",
+        arguments: BiometricSessionError.Code.allCases
+    )
+    func docURLHasNoPlaceholder(code: BiometricSessionError.Code) {
+        let text = BiometricSessionError(code: code).docURL.absoluteString
+        #expect(!text.contains("<"))
+        #expect(!text.contains(">"))
+        #expect(!text.lowercased().contains("owner"))
+    }
+
+    @Test("The URL points to the repository error guide")
+    func docURLPath() {
+        let url = BiometricSessionError(code: .unknown).docURL
+        #expect(url.host == "github.com")
+        #expect(url.path.hasSuffix("/Docs/Errors.md"))
+    }
 }

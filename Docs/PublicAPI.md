@@ -75,7 +75,7 @@ Link into test targets only.
 
 | # | Finding | Status |
 | --- | --- | --- |
-| F1 | `docURL` points to one Apple page for every code. Wrong for Keychain, policy, step-up and enrollment codes. | Open. Fix before the 1.0.0 tag. |
+| F1 | `docURL` pointed to one Apple page for every code. | Closed. Each code links to its heading in `Docs/Errors.md`. |
 | F2 | Public enums are not frozen. A new case breaks exhaustive switches. | Accepted. Policy above. |
 | F3 | `authenticate` uses untyped `throws`. Typed throws at iOS 14: UNKNOWN. | Open. Not adopted in 1.0.0. |
 | F4 | `SessionState` carries no reason for a sign out. Adding one later is breaking. | Open. Use a separate API if needed. |

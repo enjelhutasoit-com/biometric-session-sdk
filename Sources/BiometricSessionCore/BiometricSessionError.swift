@@ -79,14 +79,17 @@ extension BiometricSessionError: CustomStringConvertible {
 }
 
 extension BiometricSessionError.Code {
-    // UNKNOWN: this page still resolves.
-    // Verify by: open it in a browser.
-    private static let referenceURL: URL = {
-        // Literal is valid. The https test fails if this is ever edited into an invalid URL.
-        URL(string: "https://developer.apple.com/documentation/localauthentication/laerror")!
-    }()
+    // The tests fail while a placeholder is left in the URL.
+    private static let guideURL =
+        "https://github.com/enjelhutasoit-com/BiometricSession/blob/main/Docs/Errors.md"
 
-    var docURL: URL { Self.referenceURL }
+    // Fragment = lowercase case name. It matches the GitHub anchor of the
+    // heading in Docs/Errors.md. check-errors-doc.sh keeps the two in step.
+    var docURL: URL {
+        let fragment = String(describing: self).lowercased()
+        // The literal is valid. The path and placeholder tests fail if it is edited badly.
+        return URL(string: "\(Self.guideURL)#\(fragment)")!
+    }
 
     var defaultReason: String {
         switch self {
