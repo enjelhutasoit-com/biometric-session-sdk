@@ -79,9 +79,8 @@ extension BiometricSessionError: CustomStringConvertible {
 }
 
 extension BiometricSessionError.Code {
-    // The tests fail while a placeholder is left in the URL.
     private static let guideURL =
-        "https://github.com/enjelhutasoit-com/BiometricSession/blob/main/Docs/Errors.md"
+        "https://github.com/enjelhutasoit-com/biometric-session-sdk/blob/main/Docs/Errors.md"
 
     // Fragment = lowercase case name. It matches the GitHub anchor of the
     // heading in Docs/Errors.md. check-errors-doc.sh keeps the two in step.
