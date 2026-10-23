@@ -122,7 +122,8 @@ jobs:
         run: |
           xcodebuild test \
             -scheme BiometricSessionUIKit \
-            -destination 'platform=iOS Simulator,name=iPhone 16'
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -clean
 
   docs:
     runs-on: macos-15
