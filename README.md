@@ -1,9 +1,19 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/enjelhutasoit-com/biometric-session-sdk/main/assets/biometric-session-logo.png" alt="Biometric Session logo" height="130">
-</p>
+
 
 # BiometricSession
 
+[![CI](https://github.com/enjelhutasoit-com/biometric-session-sdk/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/enjelhutasoit-com/biometric-session-sdk/actions/workflows/ci.yml)
+[![Docs](https://github.com/enjelhutasoit-com/biometric-session-sdk/actions/workflows/pages.yml/badge.svg?branch=main)](https://enjelhutasoit-com.github.io/biometric-session-sdk/)
+[![Release](https://img.shields.io/github/v/release/enjelhutasoit-com/biometric-session-sdk)](https://github.com/enjelhutasoit-com/biometric-session-sdk/releases)
+[![License: MIT](https://img.shields.io/github/license/enjelhutasoit-com/biometric-session-sdk)](LICENSE)
+![Swift 6.0](https://img.shields.io/badge/Swift-6.0-orange)
+![iOS 14+](https://img.shields.io/badge/iOS-14%2B-blue)
+</p>
+
+Biometric authentication and session lifecycle kit for Swift apps.
+Zero third-party dependencies.
 Biometric authentication and session lifecycle kit for Swift apps.
 Zero third-party dependencies.
 
