@@ -12,7 +12,17 @@
 		EF204CA13089BD9800095102 /* BiometricSessionLocalAuth in Frameworks */ = {isa = PBXBuildFile; productRef = EF204CA03089BD9800095102 /* BiometricSessionLocalAuth */; };
 		EF204CA33089BD9800095102 /* BiometricSessionTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = EF204CA23089BD9800095102 /* BiometricSessionTestSupport */; };
 		EF204CA53089BD9800095102 /* BiometricSessionUIKit in Frameworks */ = {isa = PBXBuildFile; productRef = EF204CA43089BD9800095102 /* BiometricSessionUIKit */; };
-		EF204CA83089BDDA00095102 /* BiometricSessionCore in Frameworks */ = {isa = PBXBuildFile; productRef = EF204CA73089BDDA00095102 /* BiometricSessionCore */; };
+		EF4313A7308BD394009BCA85 /* BiometricSessionCore in Frameworks */ = {isa = PBXBuildFile; productRef = EF4313A6308BD394009BCA85 /* BiometricSessionCore */; };
+		EF4313A9308BD394009BCA85 /* BiometricSessionKeychain in Frameworks */ = {isa = PBXBuildFile; productRef = EF4313A8308BD394009BCA85 /* BiometricSessionKeychain */; };
+		EF4313AB308BD394009BCA85 /* BiometricSessionLocalAuth in Frameworks */ = {isa = PBXBuildFile; productRef = EF4313AA308BD394009BCA85 /* BiometricSessionLocalAuth */; };
+		EF4313AD308BD394009BCA85 /* BiometricSessionTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = EF4313AC308BD394009BCA85 /* BiometricSessionTestSupport */; };
+		EF4313AF308BD394009BCA85 /* BiometricSessionUIKit in Frameworks */ = {isa = PBXBuildFile; productRef = EF4313AE308BD394009BCA85 /* BiometricSessionUIKit */; };
+		EF4313B2308BD470009BCA85 /* BiometricSessionCore in Frameworks */ = {isa = PBXBuildFile; productRef = EF4313B1308BD470009BCA85 /* BiometricSessionCore */; };
+		EF4313B4308BD470009BCA85 /* BiometricSessionKeychain in Frameworks */ = {isa = PBXBuildFile; productRef = EF4313B3308BD470009BCA85 /* BiometricSessionKeychain */; };
+		EF4313B6308BD470009BCA85 /* BiometricSessionLocalAuth in Frameworks */ = {isa = PBXBuildFile; productRef = EF4313B5308BD470009BCA85 /* BiometricSessionLocalAuth */; };
+		EF4313B8308BD470009BCA85 /* BiometricSessionTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = EF4313B7308BD470009BCA85 /* BiometricSessionTestSupport */; };
+		EF4313BA308BD470009BCA85 /* BiometricSessionUIKit in Frameworks */ = {isa = PBXBuildFile; productRef = EF4313B9308BD470009BCA85 /* BiometricSessionUIKit */; };
+		EF4313BC308BD47F009BCA85 /* BiometricSessionCore in Frameworks */ = {isa = PBXBuildFile; productRef = EF4313BB308BD47F009BCA85 /* BiometricSessionCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,9 +67,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF204CA13089BD9800095102 /* BiometricSessionLocalAuth in Frameworks */,
+				EF4313BA308BD470009BCA85 /* BiometricSessionUIKit in Frameworks */,
+				EF4313AB308BD394009BCA85 /* BiometricSessionLocalAuth in Frameworks */,
+				EF4313B4308BD470009BCA85 /* BiometricSessionKeychain in Frameworks */,
 				EF204CA53089BD9800095102 /* BiometricSessionUIKit in Frameworks */,
 				EF204C9F3089BD9800095102 /* BiometricSessionKeychain in Frameworks */,
+				EF4313B2308BD470009BCA85 /* BiometricSessionCore in Frameworks */,
 				EF204C9D3089BD9800095102 /* BiometricSessionCore in Frameworks */,
+				EF4313B6308BD470009BCA85 /* BiometricSessionLocalAuth in Frameworks */,
+				EF4313AF308BD394009BCA85 /* BiometricSessionUIKit in Frameworks */,
+				EF4313A9308BD394009BCA85 /* BiometricSessionKeychain in Frameworks */,
+				EF4313A7308BD394009BCA85 /* BiometricSessionCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -67,8 +85,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF4313AD308BD394009BCA85 /* BiometricSessionTestSupport in Frameworks */,
+				EF4313B8308BD470009BCA85 /* BiometricSessionTestSupport in Frameworks */,
 				EF204CA33089BD9800095102 /* BiometricSessionTestSupport in Frameworks */,
-				EF204CA83089BDDA00095102 /* BiometricSessionCore in Frameworks */,
+				EF4313BC308BD47F009BCA85 /* BiometricSessionCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,6 +153,14 @@
 				EF204C9E3089BD9800095102 /* BiometricSessionKeychain */,
 				EF204CA03089BD9800095102 /* BiometricSessionLocalAuth */,
 				EF204CA43089BD9800095102 /* BiometricSessionUIKit */,
+				EF4313A6308BD394009BCA85 /* BiometricSessionCore */,
+				EF4313A8308BD394009BCA85 /* BiometricSessionKeychain */,
+				EF4313AA308BD394009BCA85 /* BiometricSessionLocalAuth */,
+				EF4313AE308BD394009BCA85 /* BiometricSessionUIKit */,
+				EF4313B1308BD470009BCA85 /* BiometricSessionCore */,
+				EF4313B3308BD470009BCA85 /* BiometricSessionKeychain */,
+				EF4313B5308BD470009BCA85 /* BiometricSessionLocalAuth */,
+				EF4313B9308BD470009BCA85 /* BiometricSessionUIKit */,
 			);
 			productName = BiometricSessionDemo;
 			productReference = EF204C6E30894E3E00095102 /* BiometricSessionDemo.app */;
@@ -157,7 +185,9 @@
 			name = BiometricSessionDemoTests;
 			packageProductDependencies = (
 				EF204CA23089BD9800095102 /* BiometricSessionTestSupport */,
-				EF204CA73089BDDA00095102 /* BiometricSessionCore */,
+				EF4313AC308BD394009BCA85 /* BiometricSessionTestSupport */,
+				EF4313B7308BD470009BCA85 /* BiometricSessionTestSupport */,
+				EF4313BB308BD47F009BCA85 /* BiometricSessionCore */,
 			);
 			productName = BiometricSessionDemoTests;
 			productReference = EF204C7E30894E4400095102 /* BiometricSessionDemoTests.xctest */;
@@ -217,7 +247,7 @@
 			mainGroup = EF204C6530894E3E00095102;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				EF204C9B3089BD9800095102 /* XCLocalSwiftPackageReference "../../../BiometricSession" */,
+				EF4313B0308BD470009BCA85 /* XCLocalSwiftPackageReference "../.." */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EF204C6F30894E3E00095102 /* Products */;
@@ -420,6 +450,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"BiometricSessionDemo/Preview Content\"";
+				DEVELOPMENT_TEAM = FN97V72AGN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "\"Unlock the demo session\"";
@@ -450,6 +481,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"BiometricSessionDemo/Preview Content\"";
+				DEVELOPMENT_TEAM = FN97V72AGN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "\"Unlock the demo session\"";
@@ -585,9 +617,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		EF204C9B3089BD9800095102 /* XCLocalSwiftPackageReference "../../../BiometricSession" */ = {
+		EF4313B0308BD470009BCA85 /* XCLocalSwiftPackageReference "../.." */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../../BiometricSession;
+			relativePath = ../..;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -612,9 +644,49 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = BiometricSessionUIKit;
 		};
-		EF204CA73089BDDA00095102 /* BiometricSessionCore */ = {
+		EF4313A6308BD394009BCA85 /* BiometricSessionCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = EF204C9B3089BD9800095102 /* XCLocalSwiftPackageReference "../../../BiometricSession" */;
+			productName = BiometricSessionCore;
+		};
+		EF4313A8308BD394009BCA85 /* BiometricSessionKeychain */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BiometricSessionKeychain;
+		};
+		EF4313AA308BD394009BCA85 /* BiometricSessionLocalAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BiometricSessionLocalAuth;
+		};
+		EF4313AC308BD394009BCA85 /* BiometricSessionTestSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BiometricSessionTestSupport;
+		};
+		EF4313AE308BD394009BCA85 /* BiometricSessionUIKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BiometricSessionUIKit;
+		};
+		EF4313B1308BD470009BCA85 /* BiometricSessionCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BiometricSessionCore;
+		};
+		EF4313B3308BD470009BCA85 /* BiometricSessionKeychain */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BiometricSessionKeychain;
+		};
+		EF4313B5308BD470009BCA85 /* BiometricSessionLocalAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BiometricSessionLocalAuth;
+		};
+		EF4313B7308BD470009BCA85 /* BiometricSessionTestSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BiometricSessionTestSupport;
+		};
+		EF4313B9308BD470009BCA85 /* BiometricSessionUIKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BiometricSessionUIKit;
+		};
+		EF4313BB308BD47F009BCA85 /* BiometricSessionCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EF4313B0308BD470009BCA85 /* XCLocalSwiftPackageReference "../.." */;
 			productName = BiometricSessionCore;
 		};
 /* End XCSwiftPackageProductDependency section */
